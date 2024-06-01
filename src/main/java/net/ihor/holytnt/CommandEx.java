@@ -22,6 +22,7 @@ public class CommandEx implements CommandExecutor {
             ItemStack tnt = new ItemStack(Material.TNT);
             tnt.setAmount(64);
             ItemMeta tntmeta = tnt.getItemMeta();
+            tntmeta.setDisplayName(ColorUtil.msg("&x&f&f&0&0&b&fC&x&e&e&1&4&c&44 &x&d&d&2&9&c&aВ&x&c&b&3&d&c&fз&x&b&a&5&1&d&5Р&x&a&9&6&5&d&aы&x&9&8&7&a&e&0В&x&8&7&8&e&e&5ч&x&7&6&a&2&e&bА&x&6&4&b&6&f&0т&x&5&3&c&b&f&6К&x&4&2&d&f&f&bа"));
             lore.add(ColorUtil.msg("&6&lTNT"));
             tntmeta.setLore(lore);
             tnt.setItemMeta(tntmeta);

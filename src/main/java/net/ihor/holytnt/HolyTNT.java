@@ -97,7 +97,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
         if (lore != null && lore.contains(ColorUtil.msg("&6&lTNT"))) {
             event.setCancelled(true);
             Location location = event.getVelocity().toLocation(event.getBlock().getWorld());
-            spawnTNT(location);
+            spawnС4TNT(location);
             event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
         }
     }
@@ -107,7 +107,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
         if (coords.contains(event.getBlock().getLocation())) {
             event.setCancelled(true);
             event.getBlock().setType(Material.AIR);
-            spawnTNT(event.getBlock().getLocation());
+            spawnС4TNT(event.getBlock().getLocation());
             event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
             coords.remove(event.getBlock().getLocation());
         }
@@ -117,7 +117,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
     public void customTNTExplode(EntityExplodeEvent event) {
         if (event.getEntity().getType() == EntityType.PRIMED_TNT && event.getEntity().getCustomName()!= null && event.getEntity().getCustomName().equals("GLEBBARIO")) {
             Location location = event.getLocation();
-            int radius = 3;
+            int radius = 2;
             int radius1 = 1;
             for (int x = -radius; x <= radius; x++) {
                 for (int y = -radius; y <= radius; y++) {
@@ -195,10 +195,9 @@ public final class HolyTNT extends JavaPlugin implements Listener {
         }
     }
 
-    private void spawnTNT(Location location) {
+    private void spawnС4TNT(Location location) {
         TNTPrimed tntPrimed = location.getBlock().getWorld().spawn(location.add(0.5, 0, 0.5), TNTPrimed.class);
-        tntPrimed.setYield(10);
-        tntPrimed.setCustomNameVisible(true);
+        tntPrimed.setFuseTicks(140);
         tntPrimed.setCustomName("GLEBBARIO");
     }
 
