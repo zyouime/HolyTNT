@@ -118,6 +118,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
         if (event.getEntity().getType() == EntityType.PRIMED_TNT && event.getEntity().getCustomName()!= null && event.getEntity().getCustomName().equals("GLEBBARIO")) {
             Location location = event.getLocation();
             int radius = 3;
+            int radius1 = 1;
             for (int x = -radius; x <= radius; x++) {
                 for (int y = -radius; y <= radius; y++) {
                     for (int z = -radius; z <= radius; z++) {
@@ -126,57 +127,66 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                             loc.getBlock().setType(Material.AIR);
                             loc.getBlock().getWorld().dropItem(loc, new ItemStack(Material.OBSIDIAN));
                         }
+                    }
+                }
+            }
+            for (int x = -radius1; x <= radius1; x++) {
+                for (int y = -radius1; y <= radius1; y++) {
+                    for (int z = -radius1; z <= radius1; z++) {
+                        Location loc = location.clone().add(x, y, z);
                         if (loc.getBlock().getType() == Material.ANCIENT_DEBRIS) {
-                            String id = regions.get(loc.getBlock().getLocation());
-                            int durability = durabilityMap.get(id) - 1;
-                            durabilityMap.put(id, durability);
-                            if (durability == 0) {
-                                ArmorStand armorStand = armorStands.get(loc.getBlock().getLocation());
-                                armorStand.remove();
-                                armorStands.remove(loc.getBlock().getLocation());
-                                RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-                                RegionManager manager = container.get(BukkitAdapter.adapt(event.getEntity().getWorld()));
-                                loc.getBlock().setType(Material.AIR);
-                                loc.getBlock().getWorld().playSound(loc.getBlock().getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1f, 1f);
-                                loc.getBlock().getWorld().dropItem(loc, new ItemStack(Material.ANCIENT_DEBRIS));
-                                manager.removeRegion(id);
-                                regions.remove(loc.getBlock().getLocation());
-                            } else if (durability == 3) {
-                                ArmorStand armorStand = armorStands.get(loc.getBlock().getLocation());
-                                armorStand.remove();
-                                armorStands.remove(loc.getBlock().getLocation());
-                                ArmorStand armorStand1 = (ArmorStand) loc.getBlock().getLocation().getWorld().spawnEntity(loc.getBlock().getLocation().add(0.5, 1, 0.5), EntityType.ARMOR_STAND);
-                                armorStand1.setGravity(false);
-                                armorStand1.setMarker(true);
-                                armorStand1.setCustomName(ColorUtil.msg("&e&lГЛЕБИЩЕ " + "&f&l3/4"));
-                                armorStand1.setCustomNameVisible(true);
-                                armorStand1.setVisible(false);
-                                armorStands.put(loc.getBlock().getLocation(), armorStand1);
-                                System.out.println(armorStands);
-                            } else if (durability == 2) {
-                                ArmorStand armorStand = armorStands.get(loc.getBlock().getLocation());
-                                armorStand.remove();
-                                armorStands.remove(loc.getBlock().getLocation());
-                                ArmorStand armorStand1 = (ArmorStand) loc.getBlock().getLocation().getWorld().spawnEntity(loc.getBlock().getLocation().add(0.5, 1, 0.5), EntityType.ARMOR_STAND);
-                                armorStand1.setGravity(false);
-                                armorStand1.setMarker(true);
-                                armorStand1.setCustomName(ColorUtil.msg("&6&lГЛЕБИЩЕ " + "&f&l2/4"));
-                                armorStand1.setCustomNameVisible(true);
-                                armorStand1.setVisible(false);
-                                armorStands.put(loc.getBlock().getLocation(), armorStand1);
-                                System.out.println(armorStands);
-                            } else if (durability == 1) {
-                                ArmorStand armorStand = armorStands.get(loc.getBlock().getLocation());
-                                armorStand.remove();
-                                armorStands.remove(loc.getBlock().getLocation());
-                                ArmorStand armorStand1 = (ArmorStand) loc.getBlock().getLocation().getWorld().spawnEntity(loc.getBlock().getLocation().add(0.5, 1, 0.5), EntityType.ARMOR_STAND);
-                                armorStand1.setGravity(false);
-                                armorStand1.setMarker(true);
-                                armorStand1.setCustomName(ColorUtil.msg("&c&lГЛЕБИЩЕ " + "&f&l1/4"));
-                                armorStand1.setCustomNameVisible(true);
-                                armorStand1.setVisible(false);
-                                armorStands.put(loc.getBlock().getLocation(), armorStand1);
-                                System.out.println(armorStands);
+                            if (loc.getBlock().getType() == Material.ANCIENT_DEBRIS) {
+                                String id = regions.get(loc.getBlock().getLocation());
+                                int durability = durabilityMap.get(id) - 1;
+                                durabilityMap.put(id, durability);
+                                if (durability == 0) {
+                                    ArmorStand armorStand = armorStands.get(loc.getBlock().getLocation());
+                                    armorStand.remove();
+                                    armorStands.remove(loc.getBlock().getLocation());
+                                    RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+                                    RegionManager manager = container.get(BukkitAdapter.adapt(event.getEntity().getWorld()));
+                                    loc.getBlock().setType(Material.AIR);
+                                    loc.getBlock().getWorld().playSound(loc.getBlock().getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1f, 1f);
+                                    loc.getBlock().getWorld().dropItem(loc, new ItemStack(Material.ANCIENT_DEBRIS));
+                                    manager.removeRegion(id);
+                                    regions.remove(loc.getBlock().getLocation());
+                                } else if (durability == 3) {
+                                    ArmorStand armorStand = armorStands.get(loc.getBlock().getLocation());
+                                    armorStand.remove();
+                                    armorStands.remove(loc.getBlock().getLocation());
+                                    ArmorStand armorStand1 = (ArmorStand) loc.getBlock().getLocation().getWorld().spawnEntity(loc.getBlock().getLocation().add(0.5, 1, 0.5), EntityType.ARMOR_STAND);
+                                    armorStand1.setGravity(false);
+                                    armorStand1.setMarker(true);
+                                    armorStand1.setCustomName(ColorUtil.msg("&e&lГЛЕБИЩЕ " + "&f&l3/4"));
+                                    armorStand1.setCustomNameVisible(true);
+                                    armorStand1.setVisible(false);
+                                    armorStands.put(loc.getBlock().getLocation(), armorStand1);
+                                    System.out.println(armorStands);
+                                } else if (durability == 2) {
+                                    ArmorStand armorStand = armorStands.get(loc.getBlock().getLocation());
+                                    armorStand.remove();
+                                    armorStands.remove(loc.getBlock().getLocation());
+                                    ArmorStand armorStand1 = (ArmorStand) loc.getBlock().getLocation().getWorld().spawnEntity(loc.getBlock().getLocation().add(0.5, 1, 0.5), EntityType.ARMOR_STAND);
+                                    armorStand1.setGravity(false);
+                                    armorStand1.setMarker(true);
+                                    armorStand1.setCustomName(ColorUtil.msg("&6&lГЛЕБИЩЕ " + "&f&l2/4"));
+                                    armorStand1.setCustomNameVisible(true);
+                                    armorStand1.setVisible(false);
+                                    armorStands.put(loc.getBlock().getLocation(), armorStand1);
+                                    System.out.println(armorStands);
+                                } else if (durability == 1) {
+                                    ArmorStand armorStand = armorStands.get(loc.getBlock().getLocation());
+                                    armorStand.remove();
+                                    armorStands.remove(loc.getBlock().getLocation());
+                                    ArmorStand armorStand1 = (ArmorStand) loc.getBlock().getLocation().getWorld().spawnEntity(loc.getBlock().getLocation().add(0.5, 1, 0.5), EntityType.ARMOR_STAND);
+                                    armorStand1.setGravity(false);
+                                    armorStand1.setMarker(true);
+                                    armorStand1.setCustomName(ColorUtil.msg("&c&lГЛЕБИЩЕ " + "&f&l1/4"));
+                                    armorStand1.setCustomNameVisible(true);
+                                    armorStand1.setVisible(false);
+                                    armorStands.put(loc.getBlock().getLocation(), armorStand1);
+                                    System.out.println(armorStands);
+                                }
                             }
                         }
                     }
