@@ -1,0 +1,9 @@
+name: HolyTNT
+version: '${project.version}'
+main: net.ihor.holytnt.HolyTNT
+api-version: '1.16'
+depend:
+  - WorldGuard
+  - WorldEdit
+commands:
+  tnt:
