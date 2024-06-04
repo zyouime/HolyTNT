@@ -1,8 +1,7 @@
 package net.ihor.holytnt;
 
 import com.destroystokyo.paper.event.block.TNTPrimeEvent;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.WorldGuard;
@@ -11,10 +10,7 @@ import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -28,29 +24,24 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.lang.reflect.Type;
 import java.util.*;
 
 public final class HolyTNT extends JavaPlugin implements Listener {
-    private List<Location> coords = new ArrayList<>();
+    private List<String> coords = new ArrayList<>();
 
-    private Map<Location, String> regions = new HashMap<>();
+    private Map<String, String> regions = new HashMap<>();
+
     private static File file;
 
     private static Gson gson;
 
     private static ConfigData configData;
 
-    private List<String> regionsUUID = new ArrayList<>();
-
-    private List<String> armorStandsUUID = new ArrayList<>();
-    private Map<Location, ArmorStand> armorStands = new HashMap<>();
+    private Map<String, String> armorStands = new HashMap<>();
 
     private Map<String, Integer> durabilityMap = new HashMap<>();
-
 
     @Override
     public void onEnable() {
@@ -78,8 +69,10 @@ public final class HolyTNT extends JavaPlugin implements Listener {
             }
         } else {
             loadTNTConfig();
-            regionsUUID.addAll(configData.regionsUUID);
-            armorStandsUUID.addAll(configData.armorStandsUUID);
+            regions.putAll(configData.regions);
+            armorStands.putAll(configData.armorStands);
+            durabilityMap.putAll(configData.durabilityMap);
+            coords.addAll(configData.coords);
         }
     }
 
@@ -103,7 +96,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
     public void customTNTPlace(BlockPlaceEvent event) {
         List<String> lore = event.getItemInHand().getItemMeta().getLore();
         if (lore != null && lore.contains(ColorUtil.msg("&6&lTNT"))) {
-            coords.add(event.getBlock().getLocation());
+            coords.add(event.getBlock().getLocation().toString());
             System.out.println(coords + "123");
         }
         if (event.getBlock().getType() == Material.ANCIENT_DEBRIS) {
@@ -123,10 +116,8 @@ public final class HolyTNT extends JavaPlugin implements Listener {
             armorStand.setCustomNameVisible(true);
             armorStand.setVisible(false);
             event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1f, 1f);
-            regions.put(event.getBlock().getLocation(), id);
-            regionsUUID.add(id);
-            armorStandsUUID.add(String.valueOf(armorStand.getUniqueId()));
-            armorStands.put(event.getBlock().getLocation(), armorStand);
+            regions.put(event.getBlock().getLocation().toString(), id);
+            armorStands.put(event.getBlock().getLocation().toString(), String.valueOf(armorStand.getUniqueId()));
             durabilityMap.put(id, 4);
         }
     }
@@ -135,34 +126,19 @@ public final class HolyTNT extends JavaPlugin implements Listener {
     public void regionRemove(BlockBreakEvent event) {
         if (event.getBlock().getType() == Material.ANCIENT_DEBRIS) {
             if (event.getPlayer().isOp()) {
-                String id = regions.get(event.getBlock().getLocation());
+                String id = regions.get(event.getBlock().getLocation().toString());
+                String uuid = armorStands.get(event.getBlock().getLocation().toString());
                 event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1f, 1f);
-                ArmorStand armorStand = armorStands.get(event.getBlock().getLocation());
+                ArmorStand armorStand = (ArmorStand) Bukkit.getEntity(UUID.fromString(uuid));
                 RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
                 RegionManager manager = container.get(BukkitAdapter.adapt(event.getPlayer().getWorld()));
-                    if (id == null) {
-                        List<String> regionsUUIDCopy = new ArrayList<>(regionsUUID);
-                        for (String string : regionsUUIDCopy) {
-                            manager.removeRegion(string);
-                            regionsUUID.remove(string);
-                        }
-                        for (String uuid : new ArrayList<>(armorStandsUUID)) {
-                            UUID armorStandUUID = UUID.fromString(uuid);
-                            Entity entity = Bukkit.getEntity(armorStandUUID);
-                            if (entity instanceof ArmorStand) {
-                                ArmorStand armorStand1 = (ArmorStand) entity;
-                                armorStand1.remove();
-                            }
-                            armorStandsUUID.remove(uuid);
-                        }
-                    }
-                    if (id != null) {
+                if (id != null) {
                     manager.removeRegion(id);
-                    regions.remove(event.getBlock().getLocation());
-                    regionsUUID.remove(regions.get(event.getBlock().getLocation()));
-                    armorStandsUUID.remove(armorStand.getUniqueId());
+                    regions.remove(event.getBlock().getLocation().toString());
+                    configData.regions.remove(event.getBlock().getLocation().toString());
                     armorStand.remove();
-                    armorStands.remove(event.getBlock().getLocation());
+                    armorStands.remove(event.getBlock().getLocation().toString());
+                    configData.armorStands.remove(event.getBlock().getLocation().toString());
                 }
             }
         }
@@ -182,12 +158,12 @@ public final class HolyTNT extends JavaPlugin implements Listener {
 
     @EventHandler
     public void customTNTUse(TNTPrimeEvent event) {
-        if (coords.contains(event.getBlock().getLocation())) {
+        if (coords.contains(event.getBlock().getLocation().toString())) {
             event.setCancelled(true);
             event.getBlock().setType(Material.AIR);
             spawnС4TNT(event.getBlock().getLocation());
             event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
-            coords.remove(event.getBlock().getLocation());
+            coords.remove(event.getBlock().getLocation().toString());
         }
     }
 
@@ -214,55 +190,63 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                         Location loc = location.clone().add(x, y, z);
                         if (loc.getBlock().getType() == Material.ANCIENT_DEBRIS) {
                             if (loc.getBlock().getType() == Material.ANCIENT_DEBRIS) {
-                                String id = String.valueOf(regions.get(loc.getBlock().getLocation()));
+                                String id = String.valueOf(regions.get(loc.getBlock().getLocation().toString()));
                                 int durability = durabilityMap.get(id) - 1;
                                 durabilityMap.put(id, durability);
                                 if (durability == 0) {
-                                    ArmorStand armorStand = armorStands.get(loc.getBlock().getLocation());
+                                    String uuid = armorStands.get(loc.getBlock().getLocation().toString());
+                                    uuid = uuid.replaceAll("\\s", "").replaceAll("\\p{C}", "");
+                                    ArmorStand armorStand = (ArmorStand) Bukkit.getEntity(UUID.fromString(uuid));
                                     armorStand.remove();
-                                    armorStands.remove(loc.getBlock().getLocation());
+                                    armorStands.remove(loc.getBlock().getLocation().toString());
                                     RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
                                     RegionManager manager = container.get(BukkitAdapter.adapt(event.getEntity().getWorld()));
                                     loc.getBlock().setType(Material.AIR);
                                     loc.getBlock().getWorld().playSound(loc.getBlock().getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1f, 1f);
                                     loc.getBlock().getWorld().dropItem(loc, new ItemStack(Material.ANCIENT_DEBRIS));
                                     manager.removeRegion(id);
-                                    regions.remove(loc.getBlock().getLocation());
+                                    regions.remove(loc.getBlock().getLocation().toString());
                                 } else if (durability == 3) {
-                                    ArmorStand armorStand = armorStands.get(loc.getBlock().getLocation());
+                                    String uuid = armorStands.get(loc.getBlock().getLocation().toString());
+                                    uuid = uuid.replaceAll("\\s", "").replaceAll("\\p{C}", "");
+                                    ArmorStand armorStand = (ArmorStand) Bukkit.getEntity(UUID.fromString(uuid));
                                     armorStand.remove();
-                                    armorStands.remove(loc.getBlock().getLocation());
+                                    armorStands.remove(loc.getBlock().getLocation().toString());
                                     ArmorStand armorStand1 = (ArmorStand) loc.getBlock().getLocation().getWorld().spawnEntity(loc.getBlock().getLocation().add(0.5, 1, 0.5), EntityType.ARMOR_STAND);
                                     armorStand1.setGravity(false);
                                     armorStand1.setMarker(true);
                                     armorStand1.setCustomName(ColorUtil.msg("&e&lГЛЕБИЩЕ " + "&f&l3/4"));
                                     armorStand1.setCustomNameVisible(true);
                                     armorStand1.setVisible(false);
-                                    armorStands.put(loc.getBlock().getLocation(), armorStand1);
+                                    armorStands.put(loc.getBlock().getLocation().toString(), String.valueOf(armorStand1.getUniqueId()));
                                     System.out.println(armorStands);
                                 } else if (durability == 2) {
-                                    ArmorStand armorStand = armorStands.get(loc.getBlock().getLocation());
+                                    String uuid = armorStands.get(loc.getBlock().getLocation().toString());
+                                    uuid = uuid.replaceAll("\\s", "").replaceAll("\\p{C}", "");
+                                    ArmorStand armorStand = (ArmorStand) Bukkit.getEntity(UUID.fromString(uuid));
                                     armorStand.remove();
-                                    armorStands.remove(loc.getBlock().getLocation());
+                                    armorStands.remove(loc.getBlock().getLocation().toString());
                                     ArmorStand armorStand1 = (ArmorStand) loc.getBlock().getLocation().getWorld().spawnEntity(loc.getBlock().getLocation().add(0.5, 1, 0.5), EntityType.ARMOR_STAND);
                                     armorStand1.setGravity(false);
                                     armorStand1.setMarker(true);
                                     armorStand1.setCustomName(ColorUtil.msg("&6&lГЛЕБИЩЕ " + "&f&l2/4"));
                                     armorStand1.setCustomNameVisible(true);
                                     armorStand1.setVisible(false);
-                                    armorStands.put(loc.getBlock().getLocation(), armorStand1);
+                                    armorStands.put(loc.getBlock().getLocation().toString(), String.valueOf(armorStand1.getUniqueId()));
                                     System.out.println(armorStands);
                                 } else if (durability == 1) {
-                                    ArmorStand armorStand = armorStands.get(loc.getBlock().getLocation());
+                                    String uuid = armorStands.get(loc.getBlock().getLocation().toString());
+                                    uuid = uuid.replaceAll("\\s", "").replaceAll("\\p{C}", "");
+                                    ArmorStand armorStand = (ArmorStand) Bukkit.getEntity(UUID.fromString(uuid));
                                     armorStand.remove();
-                                    armorStands.remove(loc.getBlock().getLocation());
+                                    armorStands.remove(loc.getBlock().getLocation().toString());
                                     ArmorStand armorStand1 = (ArmorStand) loc.getBlock().getLocation().getWorld().spawnEntity(loc.getBlock().getLocation().add(0.5, 1, 0.5), EntityType.ARMOR_STAND);
                                     armorStand1.setGravity(false);
                                     armorStand1.setMarker(true);
                                     armorStand1.setCustomName(ColorUtil.msg("&c&lГЛЕБИЩЕ " + "&f&l1/4"));
                                     armorStand1.setCustomNameVisible(true);
                                     armorStand1.setVisible(false);
-                                    armorStands.put(loc.getBlock().getLocation(), armorStand1);
+                                    armorStands.put(loc.getBlock().getLocation().toString(), String.valueOf(armorStand1.getUniqueId()));
                                     System.out.println(armorStands);
                                 }
                             }
@@ -281,8 +265,10 @@ public final class HolyTNT extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        configData.armorStandsUUID.addAll(armorStandsUUID);
-        configData.regionsUUID.addAll(regionsUUID);
+        configData.regions.putAll(regions);
+        configData.armorStands.putAll(armorStands);
+        configData.durabilityMap.putAll(durabilityMap);
+        configData.coords.addAll(coords);
         saveTNTConfig();
     }
 }

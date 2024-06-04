@@ -12,52 +12,22 @@ import java.util.Map;
 public class ConfigData {
 
     @Expose
-    List<Location> coords = new ArrayList<>();
+    List<String> coords = new ArrayList<>();
 
     @Expose
-    List<String> armorStandsUUID = new ArrayList<>();
-
-    public void setArmorStandsUUID(List<String> armorStandsUUID) {
-        this.armorStandsUUID = armorStandsUUID;
-    }
-
-    public List<String> getArmorStandsUUID() {
-        return armorStandsUUID;
-    }
+    Map<String, String> regions = new HashMap<>();
 
     @Expose
-    List<String> regionsUUID = new ArrayList<>();
-
-    @Expose
-    Map<Location, String> regions = new HashMap<>();
-
-    public void setRegions(Map<Location, String> regions) {
-        this.regions = regions;
-    }
-
-    public Map<Location, String> getRegions() {
-        return regions;
-    }
-
-    public void setRegionsUUID(List<String> regionsUUID) {
-        this.regionsUUID = regionsUUID;
-    }
-
-    public List<String> getRegionsUUID() {
-        return regionsUUID;
-    }
-
-    @Expose
-    Map<Location, ArmorStand> armorStands = new HashMap<>();
+    Map<String, String> armorStands = new HashMap<>();
 
     @Expose
     Map<String, Integer> durabilityMap = new HashMap<>();
 
-    public void setArmorStands(Map<Location, ArmorStand> armorStands) {
+    public void setArmorStands(Map<String, String> armorStands) {
         this.armorStands = armorStands;
     }
 
-    public void setCoords(List<Location> coords) {
+    public void setCoords(List<String> coords) {
         this.coords = coords;
     }
 
@@ -65,17 +35,24 @@ public class ConfigData {
         this.durabilityMap = durabilityMap;
     }
 
-    public List<Location> getCoords() {
+    public List<String> getCoords() {
         return coords;
     }
 
-
-
-    public Map<Location, ArmorStand> getArmorStands() {
+    public Map<String, String> getArmorStands() {
         return armorStands;
     }
 
     public Map<String, Integer> getDurabilityMap() {
         return durabilityMap;
     }
+
+    public void setRegions(Map<String, String> regions) {
+        this.regions = regions;
+    }
+
+    public Map<String, String> getRegions() {
+        return regions;
+    }
 }
+
