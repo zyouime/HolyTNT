@@ -296,6 +296,9 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                         if (loc.getBlock().getType() == Material.OBSIDIAN) {
                             loc.getBlock().setType(Material.AIR);
                             loc.getBlock().getWorld().dropItem(loc, new ItemStack(Material.OBSIDIAN));
+                        } else if (loc.getBlock().getType() == Material.CRYING_OBSIDIAN) {
+                            loc.getBlock().setType(Material.AIR);
+                            loc.getBlock().getWorld().dropItem(loc, new ItemStack(Material.CRYING_OBSIDIAN));
                         }
                     }
                 }
@@ -381,6 +384,9 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                         if (loc.getBlock().getType() == Material.OBSIDIAN) {
                             loc.getBlock().setType(Material.AIR);
                             loc.getBlock().getWorld().dropItem(loc, new ItemStack(Material.OBSIDIAN));
+                        } else if (loc.getBlock().getType() == Material.CRYING_OBSIDIAN) {
+                            loc.getBlock().setType(Material.AIR);
+                            loc.getBlock().getWorld().dropItem(loc, new ItemStack(Material.CRYING_OBSIDIAN));
                         }
                     }
                 }
