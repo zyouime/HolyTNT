@@ -49,12 +49,6 @@ public final class HolyTNT extends JavaPlugin implements Listener {
 
     private Map<String, String> regions = new HashMap<>();
 
-    public static HolyTNT getInstance;
-
-    public static HolyTNT getInstance() {
-        return getInstance;
-    }
-
     private static File file;
 
     private static Gson gson;
@@ -304,6 +298,8 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                                     loc.getBlock().getWorld().dropItem(loc, new ItemStack(Material.ANCIENT_DEBRIS));
                                     manager.removeRegion(id);
                                     regions.remove(loc.getBlock().getLocation().toString());
+                                    durabilityMap.remove(loc.getBlock().getLocation().toString());
+                                    configData.durabilityMap.remove(loc.getBlock().getLocation().toString());
                                 } else if (durability == 3) {
                                     String uuid = armorStands.get(loc.getBlock().getLocation().toString());
                                     uuid = uuid.replaceAll("\\s", "").replaceAll("\\p{C}", "");
