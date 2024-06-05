@@ -207,11 +207,35 @@ public final class HolyTNT extends JavaPlugin implements Listener {
 
     @EventHandler
     public void customTNTDispanser(BlockDispenseEvent event) {
-        List<String> lore = event.getItem().getItemMeta().getLore();
-        if (lore != null && lore.contains(ColorUtil.msg("&6&lTNT"))) {
+        ItemStack nbt = event.getItem();
+        if (nbt.getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntc4"), PersistentDataType.INTEGER)) {
             event.setCancelled(true);
             Location location = event.getVelocity().toLocation(event.getBlock().getWorld());
             spawnC4TNT(location);
+            event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+        }
+        if (nbt.getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtnta"), PersistentDataType.INTEGER)) {
+            event.setCancelled(true);
+            Location location = event.getVelocity().toLocation(event.getBlock().getWorld());
+            spawnATNT(location);
+            event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+        }
+        if (nbt.getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntb"), PersistentDataType.INTEGER)) {
+            event.setCancelled(true);
+            Location location = event.getVelocity().toLocation(event.getBlock().getWorld());
+            spawnBTNT(location);
+            event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+        }
+        if (nbt.getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntrv"), PersistentDataType.INTEGER)) {
+            event.setCancelled(true);
+            Location location = event.getVelocity().toLocation(event.getBlock().getWorld());
+            spawnRVTNT(location);
+            event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+        }
+        if (nbt.getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntlv"), PersistentDataType.INTEGER)) {
+            event.setCancelled(true);
+            Location location = event.getVelocity().toLocation(event.getBlock().getWorld());
+            spawnLVTNT(location);
             event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
         }
     }
