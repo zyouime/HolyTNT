@@ -567,6 +567,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
 
                 }
                 blocks.clear();
+                iceBlocks.clear();
             }
         }.runTaskLater(this, 100);
     }
