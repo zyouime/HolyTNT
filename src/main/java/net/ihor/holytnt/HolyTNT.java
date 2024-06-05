@@ -5,10 +5,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.domains.DefaultDomain;
-import com.sk89q.worldguard.domains.PlayerDomain;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
@@ -17,7 +15,6 @@ import com.sk89q.worldguard.protection.regions.RegionContainer;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -34,7 +31,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public final class HolyTNT extends JavaPlugin implements Listener {
     private Map<String, String> coordsC4 = new HashMap<>();
@@ -538,11 +537,14 @@ public final class HolyTNT extends JavaPlugin implements Listener {
         location.setY(location.getY() + 1);
         blocks.put(location.clone(), location.getBlock().getType());
 
+        HashMap<Location, Material> iceBlocks = new HashMap<>();
+
 
         for (Map.Entry<Location, Material> entry : blocks.entrySet()) {
-            if (entry.getKey().getBlock().getType() == Material.WATER || entry.getKey().getBlock().getType() == Material.AIR) {
+            if (entry.getKey().getBlock().getType() == Material.WATER || entry.getKey().getBlock().getType() == Material.AIR || entry.getKey().getBlock().getType() == Material.PACKED_ICE) {
                 location.getBlock().getWorld().playSound(location, Sound.BLOCK_STONE_PLACE, 1f, 1f);
                 entry.getKey().getBlock().setType(Material.PACKED_ICE);
+                iceBlocks.put(entry.getKey().getBlock().getLocation(), entry.getKey().getBlock().getType());
             }
         }
 
@@ -552,6 +554,11 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                 for (Map.Entry<Location, Material> entry : blocks.entrySet()) {
                     entry.getKey().getBlock().setType(entry.getValue());
                     location.getBlock().getWorld().playSound(location, Sound.BLOCK_STONE_BREAK, 1f, 1f);
+                    if (entry.getKey().getBlock().getType() == iceBlocks.get(entry.getKey().getBlock().getLocation())) {
+                        iceBlocks.put(entry.getKey().getBlock().getLocation(), Material.AIR);
+                        entry.getKey().getBlock().setType(iceBlocks.get(entry.getKey().getBlock().getLocation()));
+                    }
+
                 }
                 blocks.clear();
             }
