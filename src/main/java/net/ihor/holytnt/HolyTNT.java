@@ -160,7 +160,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
             String id = regions.get(event.getBlock().getLocation().toString());
             RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
             RegionManager manager = container.get(BukkitAdapter.adapt(event.getPlayer().getWorld()));
-            if (event.getPlayer().isOp() || manager.getRegion(id).getOwners().contains(event.getPlayer().getUniqueId())) {
+            if (event.getPlayer().isOp() || manager.getRegion(id).getOwners().contains(event.getPlayer().getName())) {
                 String uuid = armorStands.get(event.getBlock().getLocation().toString());
                 event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1f, 1f);
                 ArmorStand armorStand = (ArmorStand) Bukkit.getEntity(UUID.fromString(uuid));
@@ -291,6 +291,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                                     ArmorStand armorStand = (ArmorStand) Bukkit.getEntity(UUID.fromString(uuid));
                                     armorStand.remove();
                                     armorStands.remove(loc.getBlock().getLocation().toString());
+                                    configData.armorStands.remove(loc.getBlock().getLocation().toString());
                                     RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
                                     RegionManager manager = container.get(BukkitAdapter.adapt(event.getEntity().getWorld()));
                                     loc.getBlock().setType(Material.AIR);
@@ -298,8 +299,9 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                                     loc.getBlock().getWorld().dropItem(loc, new ItemStack(Material.ANCIENT_DEBRIS));
                                     manager.removeRegion(id);
                                     regions.remove(loc.getBlock().getLocation().toString());
-                                    durabilityMap.remove(loc.getBlock().getLocation().toString());
-                                    configData.durabilityMap.remove(loc.getBlock().getLocation().toString());
+                                    configData.regions.remove(loc.getBlock().getLocation().toString());
+                                    durabilityMap.remove(id);
+                                    configData.durabilityMap.remove(id);
                                 } else if (durability == 3) {
                                     String uuid = armorStands.get(loc.getBlock().getLocation().toString());
                                     uuid = uuid.replaceAll("\\s", "").replaceAll("\\p{C}", "");
@@ -374,6 +376,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                                 ArmorStand armorStand = (ArmorStand) Bukkit.getEntity(UUID.fromString(uuid));
                                 armorStand.remove();
                                 armorStands.remove(loc.getBlock().getLocation().toString());
+                                configData.armorStands.remove(loc.getBlock().getLocation().toString());
                                 RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
                                 RegionManager manager = container.get(BukkitAdapter.adapt(event.getEntity().getWorld()));
                                 loc.getBlock().setType(Material.AIR);
@@ -381,7 +384,9 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                                 loc.getBlock().getWorld().dropItem(loc, new ItemStack(Material.ANCIENT_DEBRIS));
                                 manager.removeRegion(id);
                                 regions.remove(loc.getBlock().getLocation().toString());
-                                durabilityMap.remove(loc.getBlock().getLocation().toString());
+                                configData.regions.remove(loc.getBlock().getLocation().toString());
+                                durabilityMap.remove(id);
+                                configData.durabilityMap.remove(id);
                             } else if (durability == 3) {
                                 String uuid = armorStands.get(loc.getBlock().getLocation().toString());
                                 uuid = uuid.replaceAll("\\s", "").replaceAll("\\p{C}", "");
