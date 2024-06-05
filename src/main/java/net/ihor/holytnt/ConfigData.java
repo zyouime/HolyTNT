@@ -1,8 +1,6 @@
 package net.ihor.holytnt;
 
 import com.google.gson.annotations.Expose;
-import org.bukkit.Location;
-import org.bukkit.entity.ArmorStand;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +10,18 @@ import java.util.Map;
 public class ConfigData {
 
     @Expose
-    List<String> coords = new ArrayList<>();
+    Map<String, String> coordsC4 = new HashMap<>();
+
+    @Expose
+    Map<String, String> coordsRV = new HashMap<>();
+
+    @Expose
+    Map<String, String> coordsLV = new HashMap<>();
+    @Expose
+    Map<String, String> coordsB = new HashMap<>();
+
+    @Expose
+    Map<String, String> coordsA = new HashMap<>();
 
     @Expose
     Map<String, String> regions = new HashMap<>();
@@ -27,16 +36,16 @@ public class ConfigData {
         this.armorStands = armorStands;
     }
 
-    public void setCoords(List<String> coords) {
-        this.coords = coords;
+    public void setCoordsC4(Map<String, String> coords) {
+        this.coordsC4 = coords;
     }
 
     public void setDurabilityMap(Map<String, Integer> durabilityMap) {
         this.durabilityMap = durabilityMap;
     }
 
-    public List<String> getCoords() {
-        return coords;
+    public Map<String, String> getCoordsC4() {
+        return coordsC4;
     }
 
     public Map<String, String> getArmorStands() {
@@ -53,6 +62,39 @@ public class ConfigData {
 
     public Map<String, String> getRegions() {
         return regions;
+    }
+
+    public void setCoordsRV(Map<String, String> coordsRV) {
+        this.coordsRV = coordsRV;
+    }
+
+    public void setCoordsLV(Map<String, String> coordsLV) {
+        this.coordsLV = coordsLV;
+    }
+
+
+    public void setCoordsB(Map<String, String> coordsB) {
+        this.coordsB = coordsB;
+    }
+
+    public void setCoordsA(Map<String, String> coordsA) {
+        this.coordsA = coordsA;
+    }
+
+    public Map<String, String> getCoordsRV() {
+        return coordsRV;
+    }
+
+    public Map<String, String> getCoordsLV() {
+        return coordsLV;
+    }
+
+    public Map<String, String> getCoordsB() {
+        return coordsB;
+    }
+
+    public Map<String, String> getCoordsA() {
+        return coordsA;
     }
 }
 
