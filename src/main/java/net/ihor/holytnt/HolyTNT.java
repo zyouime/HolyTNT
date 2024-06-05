@@ -7,6 +7,8 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.domains.DefaultDomain;
+import com.sk89q.worldguard.domains.PlayerDomain;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
@@ -141,6 +143,9 @@ public final class HolyTNT extends JavaPlugin implements Listener {
             BlockVector3 max = BlockVector3.at(event.getBlock().getX() + radius, event.getBlock().getY() + radius, event.getBlock().getZ() + radius);
             ProtectedCuboidRegion region = new ProtectedCuboidRegion(id, min, max);
             region.setFlag(Flags.TNT, StateFlag.State.ALLOW);
+            DefaultDomain domain = new DefaultDomain();
+            domain.addPlayer(event.getPlayer().getName());
+            region.setOwners(domain);
             manager.addRegion(region);
             ArmorStand armorStand = (ArmorStand) event.getBlock().getLocation().getWorld().spawnEntity(event.getBlockPlaced().getLocation().add(0.5, 1, 0.5), EntityType.ARMOR_STAND);
             armorStand.setGravity(false);
@@ -171,8 +176,8 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                     configData.regions.remove(event.getBlock().getLocation().toString());
                     armorStand.remove();
                     armorStands.remove(event.getBlock().getLocation().toString());
-                    durabilityMap.remove(event.getBlock().getLocation().toString());
-                    configData.durabilityMap.remove(event.getBlock().getLocation().toString());
+                    durabilityMap.remove(id);
+                    configData.durabilityMap.remove(id);
                     configData.armorStands.remove(event.getBlock().getLocation().toString());
                 }
             }
