@@ -260,42 +260,47 @@ public final class HolyTNT extends JavaPlugin implements Listener {
 
     @EventHandler
     public void customTNTDispanser(BlockDispenseEvent event) {
-        ItemStack nbt = event.getItem();
-        if (nbt.getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntc4"), PersistentDataType.INTEGER)) {
-            event.setCancelled(true);
-            Location location = event.getVelocity().toLocation(event.getBlock().getWorld());
-            spawnC4TNT(location);
-            event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
-        }
-        if (nbt.getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtnta"), PersistentDataType.INTEGER)) {
-            event.setCancelled(true);
-            Location location = event.getVelocity().toLocation(event.getBlock().getWorld());
-            spawnATNT(location);
-            event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
-        }
-        if (nbt.getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntb"), PersistentDataType.INTEGER)) {
-            event.setCancelled(true);
-            Location location = event.getVelocity().toLocation(event.getBlock().getWorld());
-            spawnBTNT(location);
-            event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
-        }
-        if (nbt.getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntrv"), PersistentDataType.INTEGER)) {
-            event.setCancelled(true);
-            Location location = event.getVelocity().toLocation(event.getBlock().getWorld());
-            spawnRVTNT(location);
-            event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
-        }
-        if (nbt.getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntlv"), PersistentDataType.INTEGER)) {
-            event.setCancelled(true);
-            Location location = event.getVelocity().toLocation(event.getBlock().getWorld());
-            spawnLVTNT(location);
-            event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+        ItemStack tnt = event.getItem();
+        if (tnt.getItemMeta() != null) {
+            if (tnt.getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntc4"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
+                Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
+                spawnC4TNT(location);
+                event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+                event.setCancelled(true);
+            }
+            if (tnt.getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtnta"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
+                Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
+                spawnATNT(location);
+                event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+                event.setCancelled(true);
+            }
+            if (tnt.getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntb"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
+                Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
+                spawnBTNT(location);
+                event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+                event.setCancelled(true);
+
+            }
+            if (tnt.getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntrv"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
+                Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
+                spawnRVTNT(location);
+                event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+                event.setCancelled(true);
+            }
+            if (tnt.getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntlv"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
+                Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
+                spawnLVTNT(location);
+                event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+                event.setCancelled(true);
+            }
         }
     }
+
 
     @EventHandler
     public void TNTPrimeEvent(TNTPrimeEvent event) {
         if (coordsC4.containsKey(event.getBlock().getLocation().toString())) {
+            event.setCancelled(true);
             event.getBlock().setType(Material.AIR);
             spawnC4TNT(event.getBlock().getLocation());
             event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
@@ -337,61 +342,63 @@ public final class HolyTNT extends JavaPlugin implements Listener {
     }
     @EventHandler
     public void customTNTUse(PlayerInteractEvent event) {
-        if (event.getItem().getType() == Material.FLINT_AND_STEEL && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-            if (coordsA.containsKey(event.getClickedBlock().getLocation().toString())) {
-                event.setUseInteractedBlock(Event.Result.DENY);
-                if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
-                    event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
+        if (event.getItem() != null) {
+            if (event.getItem().getType() == Material.FLINT_AND_STEEL && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+                if (coordsA.containsKey(event.getClickedBlock().getLocation().toString())) {
+                    event.setUseInteractedBlock(Event.Result.DENY);
+                    if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
+                        event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
+                    }
+                    event.getClickedBlock().setType(Material.AIR);
+                    spawnATNT(event.getClickedBlock().getLocation());
+                    event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+                    coordsA.remove(event.getClickedBlock().getLocation().toString());
+                    configData.coordsA.remove(event.getClickedBlock().getLocation().toString());
                 }
-                event.getClickedBlock().setType(Material.AIR);
-                spawnATNT(event.getClickedBlock().getLocation());
-                event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
-                coordsA.remove(event.getClickedBlock().getLocation().toString());
-                configData.coordsA.remove(event.getClickedBlock().getLocation().toString());
-            }
-            if (coordsLV.containsKey(event.getClickedBlock().getLocation().toString())) {
-                event.setUseInteractedBlock(Event.Result.DENY);
-                if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
-                    event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
+                if (coordsLV.containsKey(event.getClickedBlock().getLocation().toString())) {
+                    event.setUseInteractedBlock(Event.Result.DENY);
+                    if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
+                        event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
+                    }
+                    event.getClickedBlock().setType(Material.AIR);
+                    spawnLVTNT(event.getClickedBlock().getLocation());
+                    event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+                    coordsLV.remove(event.getClickedBlock().getLocation().toString());
+                    configData.coordsLV.remove(event.getClickedBlock().getLocation().toString());
                 }
-                event.getClickedBlock().setType(Material.AIR);
-                spawnLVTNT(event.getClickedBlock().getLocation());
-                event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
-                coordsLV.remove(event.getClickedBlock().getLocation().toString());
-                configData.coordsLV.remove(event.getClickedBlock().getLocation().toString());
-            }
-            if (coordsRV.containsKey(event.getClickedBlock().getLocation().toString())) {
-                event.setUseInteractedBlock(Event.Result.DENY);
-                if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
-                    event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
+                if (coordsRV.containsKey(event.getClickedBlock().getLocation().toString())) {
+                    event.setUseInteractedBlock(Event.Result.DENY);
+                    if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
+                        event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
+                    }
+                    event.getClickedBlock().setType(Material.AIR);
+                    spawnRVTNT(event.getClickedBlock().getLocation());
+                    event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+                    coordsRV.remove(event.getClickedBlock().getLocation().toString());
+                    configData.coordsRV.remove(event.getClickedBlock().getLocation().toString());
                 }
-                event.getClickedBlock().setType(Material.AIR);
-                spawnRVTNT(event.getClickedBlock().getLocation());
-                event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
-                coordsRV.remove(event.getClickedBlock().getLocation().toString());
-                configData.coordsRV.remove(event.getClickedBlock().getLocation().toString());
-            }
-            if (coordsB.containsKey(event.getClickedBlock().getLocation().toString())) {
-                event.setUseInteractedBlock(Event.Result.DENY);
-                if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
-                    event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
+                if (coordsB.containsKey(event.getClickedBlock().getLocation().toString())) {
+                    event.setUseInteractedBlock(Event.Result.DENY);
+                    if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
+                        event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
+                    }
+                    event.getClickedBlock().setType(Material.AIR);
+                    spawnBTNT(event.getClickedBlock().getLocation());
+                    event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+                    coordsB.remove(event.getClickedBlock().getLocation().toString());
+                    configData.coordsB.remove(event.getClickedBlock().getLocation().toString());
                 }
-                event.getClickedBlock().setType(Material.AIR);
-                spawnBTNT(event.getClickedBlock().getLocation());
-                event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
-                coordsB.remove(event.getClickedBlock().getLocation().toString());
-                configData.coordsB.remove(event.getClickedBlock().getLocation().toString());
-            }
-            if (coordsC4.containsKey(event.getClickedBlock().getLocation().toString())) {
-                event.setUseInteractedBlock(Event.Result.DENY);
-                if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
-                    event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
+                if (coordsC4.containsKey(event.getClickedBlock().getLocation().toString())) {
+                    event.setUseInteractedBlock(Event.Result.DENY);
+                    if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
+                        event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
+                    }
+                    event.getClickedBlock().setType(Material.AIR);
+                    spawnC4TNT(event.getClickedBlock().getLocation());
+                    event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+                    coordsC4.remove(event.getClickedBlock().getLocation().toString());
+                    configData.coordsC4.remove(event.getClickedBlock().getLocation().toString());
                 }
-                event.getClickedBlock().setType(Material.AIR);
-                spawnC4TNT(event.getClickedBlock().getLocation());
-                event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
-                coordsC4.remove(event.getClickedBlock().getLocation().toString());
-                configData.coordsC4.remove(event.getClickedBlock().getLocation().toString());
             }
         }
     }
