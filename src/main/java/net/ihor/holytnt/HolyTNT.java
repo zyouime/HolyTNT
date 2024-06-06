@@ -425,7 +425,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                     for (int z = -radius1; z <= radius1; z++) {
                         Location loc = location.clone().add(x, y, z);
                         String id = String.valueOf(regions.get(loc.getBlock().getLocation().toString()));
-                            if (loc.getBlock().getType() == Material.ANCIENT_DEBRIS && id != null) {
+                            if (loc.getBlock().getType() == Material.ANCIENT_DEBRIS && id != null && durabilityMap.containsKey(id)) {
                                 int durability = durabilityMap.get(id) - 1;
                                 durabilityMap.put(id, durability);
                                 if (durability == 0) {
@@ -513,7 +513,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                     for (int z = -radius1; z <= radius1; z++) {
                         Location loc = location.clone().add(x, y, z);
                         String id = String.valueOf(regions.get(loc.getBlock().getLocation().toString()));
-                        if (loc.getBlock().getType() == Material.ANCIENT_DEBRIS && id != null) {
+                        if (loc.getBlock().getType() == Material.ANCIENT_DEBRIS && id != null && durabilityMap.containsKey(id)) {
                             int durability = durabilityMap.get(id) - 1;
                             durabilityMap.put(id, durability);
                             if (durability == 0) {
