@@ -13,15 +13,21 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.TNTPrimed;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -33,6 +39,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public final class HolyTNT extends JavaPlugin implements Listener {
@@ -238,51 +245,56 @@ public final class HolyTNT extends JavaPlugin implements Listener {
             event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
         }
     }
-
     @EventHandler
-    public void customTNTUse(TNTPrimeEvent event) {
-        if (coordsC4.containsKey(event.getBlock().getLocation().toString())) {
-            event.setCancelled(true);
-            event.getBlock().setType(Material.AIR);
-            spawnC4TNT(event.getBlock().getLocation());
-            event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
-            coordsC4.remove(event.getBlock().getLocation().toString());
-            configData.coordsC4.remove(event.getBlock().getLocation().toString());
-        }
-        if (coordsB.containsKey(event.getBlock().getLocation().toString())) {
-            event.setCancelled(true);
-            event.getBlock().setType(Material.AIR);
-            spawnBTNT(event.getBlock().getLocation());
-            event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
-            coordsB.remove(event.getBlock().getLocation().toString());
-            configData.coordsB.remove(event.getBlock().getLocation().toString());
-        }
-        if (coordsA.containsKey(event.getBlock().getLocation().toString())) {
-            event.setCancelled(true);
-            event.getBlock().setType(Material.AIR);
-            spawnATNT(event.getBlock().getLocation());
-            event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
-            coordsA.remove(event.getBlock().getLocation().toString());
-            configData.coordsA.remove(event.getBlock().getLocation().toString());
-        }
-        if (coordsRV.containsKey(event.getBlock().getLocation().toString())) {
-            event.setCancelled(true);
-            event.getBlock().setType(Material.AIR);
-            spawnRVTNT(event.getBlock().getLocation());
-            event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
-            coordsRV.remove(event.getBlock().getLocation().toString());
-            configData.coordsRV.remove(event.getBlock().getLocation().toString());
-        }
-        if (coordsLV.containsKey(event.getBlock().getLocation().toString())) {
-            event.setCancelled(true);
-            event.getBlock().setType(Material.AIR);
-            spawnLVTNT(event.getBlock().getLocation());
-            event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
-            coordsLV.remove(event.getBlock().getLocation().toString());
-            configData.coordsLV.remove(event.getBlock().getLocation().toString());
+    public void customTNTUse(PlayerInteractEvent event) {
+        if (event.getItem().getType() == Material.FLINT_AND_STEEL && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+            if (coordsA.containsKey(event.getClickedBlock().getLocation().toString())) {
+                event.setUseInteractedBlock(Event.Result.DENY);
+                event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
+                event.getClickedBlock().setType(Material.AIR);
+                spawnATNT(event.getClickedBlock().getLocation());
+                event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+                coordsA.remove(event.getClickedBlock().getLocation().toString());
+                configData.coordsA.remove(event.getClickedBlock().getLocation().toString());
+            }
+            if (coordsLV.containsKey(event.getClickedBlock().getLocation().toString())) {
+                event.setUseInteractedBlock(Event.Result.DENY);
+                event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
+                event.getClickedBlock().setType(Material.AIR);
+                spawnLVTNT(event.getClickedBlock().getLocation());
+                event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+                coordsLV.remove(event.getClickedBlock().getLocation().toString());
+                configData.coordsLV.remove(event.getClickedBlock().getLocation().toString());
+            }
+            if (coordsRV.containsKey(event.getClickedBlock().getLocation().toString())) {
+                event.setUseInteractedBlock(Event.Result.DENY);
+                event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
+                event.getClickedBlock().setType(Material.AIR);
+                spawnRVTNT(event.getClickedBlock().getLocation());
+                event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+                coordsRV.remove(event.getClickedBlock().getLocation().toString());
+                configData.coordsRV.remove(event.getClickedBlock().getLocation().toString());
+            }
+            if (coordsB.containsKey(event.getClickedBlock().getLocation().toString())) {
+                event.setUseInteractedBlock(Event.Result.DENY);
+                event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
+                event.getClickedBlock().setType(Material.AIR);
+                spawnBTNT(event.getClickedBlock().getLocation());
+                event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+                coordsB.remove(event.getClickedBlock().getLocation().toString());
+                configData.coordsB.remove(event.getClickedBlock().getLocation().toString());
+            }
+            if (coordsC4.containsKey(event.getClickedBlock().getLocation().toString())) {
+                event.setUseInteractedBlock(Event.Result.DENY);
+                event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
+                event.getClickedBlock().setType(Material.AIR);
+                spawnLVTNT(event.getClickedBlock().getLocation());
+                event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+                coordsC4.remove(event.getClickedBlock().getLocation().toString());
+                configData.coordsC4.remove(event.getClickedBlock().getLocation().toString());
+            }
         }
     }
-
     @EventHandler
     public void customTNTExplode(EntityExplodeEvent event) {
         if (event.getEntity().getType() == EntityType.PRIMED_TNT && event.getEntity().getCustomName() != null && event.getEntity().getCustomName().equals("C4") && event.getLocation().getBlock().getType() != Material.WATER) {
@@ -462,8 +474,9 @@ public final class HolyTNT extends JavaPlugin implements Listener {
             }
         }
         if (event.getEntity().getType() == EntityType.PRIMED_TNT && event.getEntity().getCustomName() != null && event.getEntity().getCustomName().equals("LV")) {
-            event.setCancelled(true);
             spawnSphere(event.getLocation());
+            event.getLocation().getBlock().getWorld().playSound(event.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1f, 1f);
+            event.setCancelled(true);
         }
     }
 
