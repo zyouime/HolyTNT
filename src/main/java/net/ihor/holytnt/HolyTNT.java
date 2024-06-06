@@ -164,24 +164,22 @@ public final class HolyTNT extends JavaPlugin implements Listener {
 
     @EventHandler
     public void BlockBreakEvent(BlockBreakEvent event) {
-        if (event.getBlock().getType() == Material.ANCIENT_DEBRIS) {
-            String id = regions.get(event.getBlock().getLocation().toString());
+        String id = regions.get(event.getBlock().getLocation().toString());
+        if (event.getBlock().getType() == Material.ANCIENT_DEBRIS && id != null) {
             RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
             RegionManager manager = container.get(BukkitAdapter.adapt(event.getPlayer().getWorld()));
             if (event.getPlayer().isOp() || manager.getRegion(id).getOwners().contains(event.getPlayer().getName())) {
                 String uuid = armorStands.get(event.getBlock().getLocation().toString());
                 event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1f, 1f);
                 ArmorStand armorStand = (ArmorStand) Bukkit.getEntity(UUID.fromString(uuid));
-                if (id != null) {
-                    manager.removeRegion(id);
-                    regions.remove(event.getBlock().getLocation().toString());
-                    configData.regions.remove(event.getBlock().getLocation().toString());
-                    armorStand.remove();
-                    armorStands.remove(event.getBlock().getLocation().toString());
-                    durabilityMap.remove(id);
-                    configData.durabilityMap.remove(id);
-                    configData.armorStands.remove(event.getBlock().getLocation().toString());
-                }
+                manager.removeRegion(id);
+                regions.remove(event.getBlock().getLocation().toString());
+                configData.regions.remove(event.getBlock().getLocation().toString());
+                armorStand.remove();
+                armorStands.remove(event.getBlock().getLocation().toString());
+                durabilityMap.remove(id);
+                configData.durabilityMap.remove(id);
+                configData.armorStands.remove(event.getBlock().getLocation().toString());
             }
         } else if (event.getBlock().getType() == Material.TNT) {
             String idA = coordsA.get(event.getBlock().getLocation().toString());
@@ -426,8 +424,8 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                 for (int y = -radius1; y <= radius1; y++) {
                     for (int z = -radius1; z <= radius1; z++) {
                         Location loc = location.clone().add(x, y, z);
-                            if (loc.getBlock().getType() == Material.ANCIENT_DEBRIS) {
-                                String id = String.valueOf(regions.get(loc.getBlock().getLocation().toString()));
+                        String id = String.valueOf(regions.get(loc.getBlock().getLocation().toString()));
+                            if (loc.getBlock().getType() == Material.ANCIENT_DEBRIS && id != null) {
                                 int durability = durabilityMap.get(id) - 1;
                                 durabilityMap.put(id, durability);
                                 if (durability == 0) {
@@ -514,8 +512,8 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                 for (int y = -radius1; y <= radius1; y++) {
                     for (int z = -radius1; z <= radius1; z++) {
                         Location loc = location.clone().add(x, y, z);
-                        if (loc.getBlock().getType() == Material.ANCIENT_DEBRIS) {
-                            String id = String.valueOf(regions.get(loc.getBlock().getLocation().toString()));
+                        String id = String.valueOf(regions.get(loc.getBlock().getLocation().toString()));
+                        if (loc.getBlock().getType() == Material.ANCIENT_DEBRIS && id != null) {
                             int durability = durabilityMap.get(id) - 1;
                             durabilityMap.put(id, durability);
                             if (durability == 0) {
