@@ -378,7 +378,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                 event.setUseInteractedBlock(Event.Result.DENY);
                 event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
                 event.getClickedBlock().setType(Material.AIR);
-                spawnLVTNT(event.getClickedBlock().getLocation());
+                spawnC4TNT(event.getClickedBlock().getLocation());
                 event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
                 coordsC4.remove(event.getClickedBlock().getLocation().toString());
                 configData.coordsC4.remove(event.getClickedBlock().getLocation().toString());
