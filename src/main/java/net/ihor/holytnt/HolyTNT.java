@@ -260,35 +260,35 @@ public final class HolyTNT extends JavaPlugin implements Listener {
 
     @EventHandler
     public void customTNTDispanser(BlockDispenseEvent event) {
-        ItemStack tnt = event.getItem();
-        if (tnt.getItemMeta() != null) {
-            if (tnt.getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntc4"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
+        if (event.getItem().getItemMeta() != null) {
+            if (event.getItem().getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntc4"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
                 Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
                 spawnC4TNT(location);
                 event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
                 event.setCancelled(true);
             }
-            if (tnt.getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtnta"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
+            if (event.getItem().getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtnta"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
                 Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
                 spawnATNT(location);
                 event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
                 event.setCancelled(true);
             }
-            if (tnt.getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntb"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
+            if (event.getItem().getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntb"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
                 Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
                 spawnBTNT(location);
                 event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
                 event.setCancelled(true);
 
             }
-            if (tnt.getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntrv"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
+            if (event.getItem().getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntrv"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
                 Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
                 spawnRVTNT(location);
                 event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
                 event.setCancelled(true);
             }
-            if (tnt.getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntlv"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
+            if (event.getItem().getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntlv"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
                 Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
+                System.out.println(event.getItem().getAmount());
                 spawnLVTNT(location);
                 event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
                 event.setCancelled(true);
@@ -404,7 +404,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
     }
     @EventHandler
     public void customTNTExplode(EntityExplodeEvent event) {
-        if (event.getEntity().getType() == EntityType.PRIMED_TNT && event.getEntity().getCustomName() != null && event.getEntity().getCustomName().equals("C4") && event.getLocation().getBlock().getType() != Material.WATER) {
+        if (event.getEntity().getType() == EntityType.PRIMED_TNT && event.getEntity().getCustomName() != null && event.getEntity().getCustomName().equals("C4") && event.getLocation().getBlock().getType() != Material.WATER && event.getLocation().getBlock().getType() != Material.LAVA) {
             Location location = event.getLocation();
             int radius = 2;
             int radius1 = 1;
