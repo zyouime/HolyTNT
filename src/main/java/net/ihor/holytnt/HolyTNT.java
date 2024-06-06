@@ -340,7 +340,9 @@ public final class HolyTNT extends JavaPlugin implements Listener {
         if (event.getItem().getType() == Material.FLINT_AND_STEEL && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
             if (coordsA.containsKey(event.getClickedBlock().getLocation().toString())) {
                 event.setUseInteractedBlock(Event.Result.DENY);
-                event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
+                if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
+                    event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
+                }
                 event.getClickedBlock().setType(Material.AIR);
                 spawnATNT(event.getClickedBlock().getLocation());
                 event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
@@ -349,7 +351,9 @@ public final class HolyTNT extends JavaPlugin implements Listener {
             }
             if (coordsLV.containsKey(event.getClickedBlock().getLocation().toString())) {
                 event.setUseInteractedBlock(Event.Result.DENY);
-                event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
+                if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
+                    event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
+                }
                 event.getClickedBlock().setType(Material.AIR);
                 spawnLVTNT(event.getClickedBlock().getLocation());
                 event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
@@ -358,7 +362,9 @@ public final class HolyTNT extends JavaPlugin implements Listener {
             }
             if (coordsRV.containsKey(event.getClickedBlock().getLocation().toString())) {
                 event.setUseInteractedBlock(Event.Result.DENY);
-                event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
+                if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
+                    event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
+                }
                 event.getClickedBlock().setType(Material.AIR);
                 spawnRVTNT(event.getClickedBlock().getLocation());
                 event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
@@ -367,7 +373,9 @@ public final class HolyTNT extends JavaPlugin implements Listener {
             }
             if (coordsB.containsKey(event.getClickedBlock().getLocation().toString())) {
                 event.setUseInteractedBlock(Event.Result.DENY);
-                event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
+                if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
+                    event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
+                }
                 event.getClickedBlock().setType(Material.AIR);
                 spawnBTNT(event.getClickedBlock().getLocation());
                 event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
@@ -376,7 +384,9 @@ public final class HolyTNT extends JavaPlugin implements Listener {
             }
             if (coordsC4.containsKey(event.getClickedBlock().getLocation().toString())) {
                 event.setUseInteractedBlock(Event.Result.DENY);
-                event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
+                if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
+                    event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
+                }
                 event.getClickedBlock().setType(Material.AIR);
                 spawnC4TNT(event.getClickedBlock().getLocation());
                 event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
