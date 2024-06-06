@@ -137,7 +137,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
         if (nbt.getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntb"), PersistentDataType.INTEGER)) {
             coordsB.put(event.getBlock().getLocation().toString(), id);
         }
-        if (event.getBlock().getType() == Material.ANCIENT_DEBRIS) {
+        if (event.getBlock().getType() == Material.ANCIENT_DEBRIS && event.getPlayer().isSneaking()) {
             int radius = 15;
             RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
             RegionManager manager = container.get(BukkitAdapter.adapt(event.getPlayer().getWorld()));
