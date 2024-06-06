@@ -669,7 +669,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
         for (Map.Entry<Location, Material> entry : blocks.entrySet()) {
             if (entry.getKey().getBlock().getType() == Material.WATER || entry.getKey().getBlock().getType() == Material.AIR || entry.getKey().getBlock().getType() == Material.PACKED_ICE) {
                 location.getBlock().getWorld().playSound(location, Sound.BLOCK_STONE_PLACE, 1f, 1f);
-                entry.getKey().getBlock().setType(Material.PACKED_ICE);
+                entry.getKey().getBlock().setType(Material.ICE);
                 iceBlocks.put(entry.getKey().getBlock().getLocation(), entry.getKey().getBlock().getType());
             }
         }
