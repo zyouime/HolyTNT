@@ -405,7 +405,6 @@ public final class HolyTNT extends JavaPlugin implements Listener {
         if (event.getEntity().getType() == EntityType.PRIMED_TNT && event.getEntity().getCustomName() != null && event.getEntity().getCustomName().equals("C4") && event.getLocation().getBlock().getType() != Material.WATER && event.getLocation().getBlock().getType() != Material.LAVA) {
             Location location = event.getLocation();
             int radius = 2;
-            int radius1 = 1;
             for (int x = -radius; x <= radius; x++) {
                 for (int y = -radius; y <= radius; y++) {
                     for (int z = -radius; z <= radius; z++) {
@@ -420,9 +419,9 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                     }
                 }
             }
-            for (int x = -radius1; x <= radius1; x++) {
-                for (int y = -radius1; y <= radius1; y++) {
-                    for (int z = -radius1; z <= radius1; z++) {
+            for (int x = -radius; x <= radius; x++) {
+                for (int y = -radius; y <= radius; y++) {
+                    for (int z = -radius; z <= radius; z++) {
                         Location loc = location.clone().add(x, y, z);
                         String id = String.valueOf(regions.get(loc.getBlock().getLocation().toString()));
                             if (loc.getBlock().getType() == Material.ANCIENT_DEBRIS && id != null && durabilityMap.containsKey(id)) {
@@ -493,7 +492,6 @@ public final class HolyTNT extends JavaPlugin implements Listener {
         if (event.getEntity().getType() == EntityType.PRIMED_TNT && event.getEntity().getCustomName() != null && event.getEntity().getCustomName().equals("RV")) {
             Location location = event.getLocation();
             int radius = 2;
-            int radius1 = 1;
             for (int x = -radius; x <= radius; x++) {
                 for (int y = -radius; y <= radius; y++) {
                     for (int z = -radius; z <= radius; z++) {
@@ -508,9 +506,9 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                     }
                 }
             }
-            for (int x = -radius1; x <= radius1; x++) {
-                for (int y = -radius1; y <= radius1; y++) {
-                    for (int z = -radius1; z <= radius1; z++) {
+            for (int x = -radius; x <= radius; x++) {
+                for (int y = -radius; y <= radius; y++) {
+                    for (int z = -radius; z <= radius; z++) {
                         Location loc = location.clone().add(x, y, z);
                         String id = String.valueOf(regions.get(loc.getBlock().getLocation().toString()));
                         if (loc.getBlock().getType() == Material.ANCIENT_DEBRIS && id != null && durabilityMap.containsKey(id)) {
