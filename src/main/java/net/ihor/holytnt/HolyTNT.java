@@ -587,77 +587,77 @@ public final class HolyTNT extends JavaPlugin implements Listener {
         HashMap<Location, Material> blocks = new HashMap<>();
 
         location.setY(location.getY() - 2);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setY(location.getY() + 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setX(location.getX() + 1);
         location.setZ(location.getZ() + 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setX(location.getX() - 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setX(location.getX() - 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setZ(location.getZ() - 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setZ(location.getZ() - 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setX(location.getX() + 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setX(location.getX() + 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setZ(location.getZ() + 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setY(location.getY() + 1);
         location.setX(location.getX() + 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setX(location.getX() - 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setX(location.getX() - 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setX(location.getX() - 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setZ(location.getZ() + 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setX(location.getX() + 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setZ(location.getZ() + 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setZ(location.getZ() - 1);
         location.setX(location.getX() + 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setZ(location.getZ() - 2);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setX(location.getX() - 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setZ(location.getZ() - 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setZ(location.getZ() + 1);
         location.setX(location.getX() - 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setZ(location.getZ() + 1);
         location.setX(location.getX() - 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setX(location.getX() + 1);
         location.setY(location.getY() + 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setZ(location.getZ() - 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setZ(location.getZ() + 2);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setX(location.getX() + 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setX(location.getX() + 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setZ(location.getZ() - 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setZ(location.getZ() - 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setX(location.getX() - 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setZ(location.getZ() + 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
         location.setY(location.getY() + 1);
-        blocks.put(location.clone(), location.getBlock().getType());
+        blocks.put(location.clone(), location.getBlock().getState().getType());
 
         HashMap<Location, Material> iceBlocks = new HashMap<>();
 
@@ -665,7 +665,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
         for (Map.Entry<Location, Material> entry : blocks.entrySet()) {
             if (entry.getKey().getBlock().getType() == Material.WATER || entry.getKey().getBlock().getType() == Material.AIR || entry.getKey().getBlock().getType() == Material.PACKED_ICE) {
                 location.getBlock().getWorld().playSound(location, Sound.BLOCK_STONE_PLACE, 1f, 1f);
-                entry.getKey().getBlock().setType(Material.ICE);
+                entry.getKey().getBlock().setType(Material.PACKED_ICE);
                 iceBlocks.put(entry.getKey().getBlock().getLocation(), entry.getKey().getBlock().getType());
             }
         }
@@ -674,7 +674,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
             @Override
             public void run() {
                 for (Map.Entry<Location, Material> entry : blocks.entrySet()) {
-                    entry.getKey().getBlock().setType(entry.getValue());
+                    entry.getKey().getBlock().getState().setType(entry.getValue());
                     location.getBlock().getWorld().playSound(location, Sound.BLOCK_STONE_BREAK, 1f, 1f);
                     if (entry.getKey().getBlock().getType() == iceBlocks.get(entry.getKey().getBlock().getLocation())) {
                         iceBlocks.put(entry.getKey().getBlock().getLocation(), Material.AIR);
