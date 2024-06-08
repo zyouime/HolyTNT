@@ -7,6 +7,7 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.domains.DefaultDomain;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
@@ -22,10 +23,7 @@ import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockDispenseEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -56,11 +54,12 @@ public final class HolyTNT extends JavaPlugin implements Listener {
 
     private Map<String, String> regions = new HashMap<>();
 
+    private Map<String, String> coordsB2 = new HashMap<>();
+
     private static File file;
 
     private static Gson gson;
 
-    private boolean flag;
     private static ConfigData configData;
 
     private Map<String, String> armorStands = new HashMap<>();
@@ -99,6 +98,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
             coordsLV.putAll(configData.coordsLV);
             coordsRV.putAll(configData.coordsRV);
             coordsB.putAll(configData.coordsB);
+            coordsB2.putAll(configData.coordsB2);
         }
     }
 
@@ -137,28 +137,38 @@ public final class HolyTNT extends JavaPlugin implements Listener {
         if (nbt.getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntb"), PersistentDataType.INTEGER)) {
             coordsB.put(event.getBlock().getLocation().toString(), id);
         }
+        if (nbt.getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntb2"), PersistentDataType.INTEGER)) {
+            coordsB2.put(event.getBlock().getLocation().toString(), id);
+        }
         if (event.getBlock().getType() == Material.ANCIENT_DEBRIS && event.getPlayer().isSneaking()) {
             int radius = 15;
             RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
             RegionManager manager = container.get(BukkitAdapter.adapt(event.getPlayer().getWorld()));
             BlockVector3 min = BlockVector3.at(event.getBlock().getX() - radius, event.getBlock().getY() - radius, event.getBlock().getZ() - radius);
             BlockVector3 max = BlockVector3.at(event.getBlock().getX() + radius, event.getBlock().getY() + radius, event.getBlock().getZ() + radius);
-            ProtectedCuboidRegion region = new ProtectedCuboidRegion(id, min, max);
-            region.setFlag(Flags.TNT, StateFlag.State.ALLOW);
-            DefaultDomain domain = new DefaultDomain();
-            domain.addPlayer(event.getPlayer().getName());
-            region.setOwners(domain);
-            manager.addRegion(region);
-            ArmorStand armorStand = (ArmorStand) event.getBlock().getLocation().getWorld().spawnEntity(event.getBlockPlaced().getLocation().add(0.5, 1, 0.5), EntityType.ARMOR_STAND);
-            armorStand.setGravity(false);
-            armorStand.setMarker(true);
-            armorStand.setCustomName(ColorUtil.msg("&a&lГЛЕБИЩЕ " + "&f&l4/4"));
-            armorStand.setCustomNameVisible(true);
-            armorStand.setVisible(false);
-            event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1f, 1f);
-            regions.put(event.getBlock().getLocation().toString(), id);
-            armorStands.put(event.getBlock().getLocation().toString(), String.valueOf(armorStand.getUniqueId()));
-            durabilityMap.put(id, 4);
+            BlockVector3 center = BlockVector3.at((min.getBlockX() + max.getBlockX()) / 2, (min.getBlockY() + max.getBlockY()) / 2, (min.getBlockZ() + max.getBlockZ()) / 2);
+            ApplicableRegionSet set = manager.getApplicableRegions(center);
+            if (!set.getRegions().isEmpty()) {
+                event.setCancelled(true);
+                event.getPlayer().sendMessage("Ты регион пересекаешь, еблан");
+            } else {
+                ProtectedCuboidRegion region = new ProtectedCuboidRegion(id, min, max);
+                region.setFlag(Flags.TNT, StateFlag.State.ALLOW);
+                DefaultDomain domain = new DefaultDomain();
+                domain.addPlayer(event.getPlayer().getName());
+                region.setOwners(domain);
+                manager.addRegion(region);
+                ArmorStand armorStand = (ArmorStand) event.getBlock().getLocation().getWorld().spawnEntity(event.getBlockPlaced().getLocation().add(0.5, 1, 0.5), EntityType.ARMOR_STAND);
+                armorStand.setGravity(false);
+                armorStand.setMarker(true);
+                armorStand.setCustomName(ColorUtil.msg("&a&lГЛЕБИЩЕ " + "&f&l4/4"));
+                armorStand.setCustomNameVisible(true);
+                armorStand.setVisible(false);
+                event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1f, 1f);
+                regions.put(event.getBlock().getLocation().toString(), id);
+                armorStands.put(event.getBlock().getLocation().toString(), String.valueOf(armorStand.getUniqueId()));
+                durabilityMap.put(id, 4);
+            }
         }
     }
 
@@ -187,6 +197,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
             String idRV = coordsRV.get(event.getBlock().getLocation().toString());
             String idLV = coordsLV.get(event.getBlock().getLocation().toString());
             String idC4 = coordsC4.get(event.getBlock().getLocation().toString());
+            String idB2 = coordsB2.get(event.getBlock().getLocation().toString());
             if (idA != null) {
                 if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
                     event.setDropItems(false);
@@ -252,10 +263,170 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                 coordsC4.remove(event.getBlock().getLocation().toString());
                 configData.coordsC4.remove(event.getBlock().getLocation().toString());
             }
+            if (idB2 != null) {
+                if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
+                    event.setDropItems(false);
+                    ItemStack tntB2 = new ItemStack(Material.TNT);
+                    ItemMeta tntmetaB2 = tntB2.getItemMeta();
+                    tntmetaB2.setDisplayName(ColorUtil.msg("&x&f&f&0&0&0&0Д&x&f&4&0&0&0&0и&x&e&9&0&0&0&0н&x&d&e&0&0&0&0а&x&d&3&0&0&0&0м&x&c&8&0&0&0&0и&x&b&d&0&0&0&0т &x&b&2&0&0&0&0Б&x&a&7&0&0&0&02"));
+                    tntmetaB2.getPersistentDataContainer().set(NamespacedKey.minecraft("customtntb2"), PersistentDataType.INTEGER, 123);
+                    tntB2.setItemMeta(tntmetaB2);
+                    event.getBlock().getWorld().dropItem(event.getBlock().getLocation(), tntB2);
+                }
+                coordsB2.remove(event.getBlock().getLocation().toString());
+                configData.coordsB2.remove(event.getBlock().getLocation().toString());
+            }
         }
     }
 
-
+    @EventHandler
+    public void pistoneTNT(BlockPistonExtendEvent event) {
+        BlockFace storonaSveta = event.getDirection();
+        UUID uuid = UUID.randomUUID();
+        for (Block block : event.getBlocks()) {
+            if (block.getType() == Material.TNT) {
+                Location location = block.getLocation();
+                if (coordsLV.containsKey(location.toString())) {
+                    coordsLV.remove(location.toString());
+                    configData.coordsLV.remove(location.toString());
+                    if (storonaSveta == BlockFace.NORTH) {
+                        location.add(0, 0, -1);
+                    }
+                    if (storonaSveta == BlockFace.SOUTH) {
+                        location.add(0, 0, 1);
+                    }
+                    if (storonaSveta == BlockFace.EAST) {
+                        location.add(1, 0, 0);
+                    }
+                    if (storonaSveta == BlockFace.WEST) {
+                        location.add(-1, 0, 0);
+                    }
+                    if (storonaSveta == BlockFace.UP) {
+                        location.add(0, 1, 0);
+                    }
+                    if (storonaSveta == BlockFace.DOWN) {
+                        location.add(0, -1, 0);
+                    }
+                    coordsLV.put(location.toString(), uuid.toString());
+                }
+                if (coordsRV.containsKey(location.toString())) {
+                    coordsRV.remove(location.toString());
+                    configData.coordsRV.remove(location.toString());
+                    if (storonaSveta == BlockFace.NORTH) {
+                        location.add(0, 0, -1);
+                    }
+                    if (storonaSveta == BlockFace.SOUTH) {
+                        location.add(0, 0, 1);
+                    }
+                    if (storonaSveta == BlockFace.EAST) {
+                        location.add(1, 0, 0);
+                    }
+                    if (storonaSveta == BlockFace.WEST) {
+                        location.add(-1, 0, 0);
+                    }
+                    if (storonaSveta == BlockFace.UP) {
+                        location.add(0, 1, 0);
+                    }
+                    if (storonaSveta == BlockFace.DOWN) {
+                        location.add(0, -1, 0);
+                    }
+                    coordsRV.put(location.toString(), uuid.toString());
+                }
+                if (coordsA.containsKey(location.toString())) {
+                    coordsA.remove(location.toString());
+                    configData.coordsA.remove(location.toString());
+                    if (storonaSveta == BlockFace.NORTH) {
+                        location.add(0, 0, -1);
+                    }
+                    if (storonaSveta == BlockFace.SOUTH) {
+                        location.add(0, 0, 1);
+                    }
+                    if (storonaSveta == BlockFace.EAST) {
+                        location.add(1, 0, 0);
+                    }
+                    if (storonaSveta == BlockFace.WEST) {
+                        location.add(-1, 0, 0);
+                    }
+                    if (storonaSveta == BlockFace.UP) {
+                        location.add(0, 1, 0);
+                    }
+                    if (storonaSveta == BlockFace.DOWN) {
+                        location.add(0, -1, 0);
+                    }
+                    coordsA.put(location.toString(), uuid.toString());
+                }
+                if (coordsB.containsKey(location.toString())) {
+                    coordsB.remove(location.toString());
+                    configData.coordsB.remove(location.toString());
+                    if (storonaSveta == BlockFace.NORTH) {
+                        location.add(0, 0, -1);
+                    }
+                    if (storonaSveta == BlockFace.SOUTH) {
+                        location.add(0, 0, 1);
+                    }
+                    if (storonaSveta == BlockFace.EAST) {
+                        location.add(1, 0, 0);
+                    }
+                    if (storonaSveta == BlockFace.WEST) {
+                        location.add(-1, 0, 0);
+                    }
+                    if (storonaSveta == BlockFace.UP) {
+                        location.add(0, 1, 0);
+                    }
+                    if (storonaSveta == BlockFace.DOWN) {
+                        location.add(0, -1, 0);
+                    }
+                    coordsB.put(location.toString(), uuid.toString());
+                }
+                if (coordsB2.containsKey(location.toString())) {
+                    coordsB2.remove(location.toString());
+                    configData.coordsB2.remove(location.toString());
+                    if (storonaSveta == BlockFace.NORTH) {
+                        location.add(0, 0, -1);
+                    }
+                    if (storonaSveta == BlockFace.SOUTH) {
+                        location.add(0, 0, 1);
+                    }
+                    if (storonaSveta == BlockFace.EAST) {
+                        location.add(1, 0, 0);
+                    }
+                    if (storonaSveta == BlockFace.WEST) {
+                        location.add(-1, 0, 0);
+                    }
+                    if (storonaSveta == BlockFace.UP) {
+                        location.add(0, 1, 0);
+                    }
+                    if (storonaSveta == BlockFace.DOWN) {
+                        location.add(0, -1, 0);
+                    }
+                    coordsB2.put(location.toString(), uuid.toString());
+                }
+                if (coordsC4.containsKey(location.toString())) {
+                    coordsC4.remove(location.toString());
+                    configData.coordsC4.remove(location.toString());
+                    if (storonaSveta == BlockFace.NORTH) {
+                        location.add(0, 0, -1);
+                    }
+                    if (storonaSveta == BlockFace.SOUTH) {
+                        location.add(0, 0, 1);
+                    }
+                    if (storonaSveta == BlockFace.EAST) {
+                        location.add(1, 0, 0);
+                    }
+                    if (storonaSveta == BlockFace.WEST) {
+                        location.add(-1, 0, 0);
+                    }
+                    if (storonaSveta == BlockFace.UP) {
+                        location.add(0, 1, 0);
+                    }
+                    if (storonaSveta == BlockFace.DOWN) {
+                        location.add(0, -1, 0);
+                    }
+                    coordsC4.put(location.toString(), uuid.toString());
+                }
+            }
+        }
+    }
     @EventHandler
     public void customTNTDispanser(BlockDispenseEvent event) {
         if (event.getItem().getItemMeta() != null) {
@@ -288,6 +459,12 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                 Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
                 System.out.println(event.getItem().getAmount());
                 spawnLVTNT(location);
+                event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+                event.setCancelled(true);
+            }
+            if (event.getItem().getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntb2"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
+                Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
+                spawnB2TNT(location);
                 event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
                 event.setCancelled(true);
             }
@@ -337,6 +514,14 @@ public final class HolyTNT extends JavaPlugin implements Listener {
             coordsLV.remove(event.getBlock().getLocation().toString());
             configData.coordsLV.remove(event.getBlock().getLocation().toString());
         }
+        if (coordsB2.containsKey(event.getBlock().getLocation().toString())) {
+            event.setCancelled(true);
+            event.getBlock().setType(Material.AIR);
+            spawnB2TNT(event.getBlock().getLocation());
+            event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+            coordsB2.remove(event.getBlock().getLocation().toString());
+            configData.coordsB2.remove(event.getBlock().getLocation().toString());
+        }
     }
     @EventHandler
     public void customTNTUse(PlayerInteractEvent event) {
@@ -352,6 +537,17 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                     event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
                     coordsA.remove(event.getClickedBlock().getLocation().toString());
                     configData.coordsA.remove(event.getClickedBlock().getLocation().toString());
+                }
+                if (coordsB2.containsKey(event.getClickedBlock().getLocation().toString())) {
+                    event.setUseInteractedBlock(Event.Result.DENY);
+                    if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
+                        event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
+                    }
+                    event.getClickedBlock().setType(Material.AIR);
+                    spawnB2TNT(event.getClickedBlock().getLocation());
+                    event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+                    coordsB2.remove(event.getClickedBlock().getLocation().toString());
+                    configData.coordsB2.remove(event.getClickedBlock().getLocation().toString());
                 }
                 if (coordsLV.containsKey(event.getClickedBlock().getLocation().toString())) {
                     event.setUseInteractedBlock(Event.Result.DENY);
@@ -581,7 +777,30 @@ public final class HolyTNT extends JavaPlugin implements Listener {
             event.getLocation().getBlock().getWorld().playSound(event.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1f, 1f);
             event.setCancelled(true);
         }
+        if (event.getEntity().getType() == EntityType.PRIMED_TNT && event.getEntity().getCustomName() != null && event.getEntity().getCustomName().equals("B2")) {
+            event.setCancelled(true);
+            event.getLocation().getBlock().getWorld().playSound(event.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1f, 1f);
+            int radius = 12;
+            for (int x = -radius; x <= radius; x++) {
+                for (int y = -radius; y <= radius; y++) {
+                    for (int z = -radius; z <= radius; z++) {
+                        Location location = event.getLocation().clone().add(x, y, z);
+                        Map<Location, Material> ignoredBlocks = new HashMap<>();
+                        ignoredBlocks.put(location.clone(), location.getBlock().getType());
+                        for (Map.Entry<Location, Material> entry : ignoredBlocks.entrySet()) {
+                            if (entry.getKey().getBlock().getType() == Material.BEDROCK || entry.getKey().getBlock().getType() == Material.ANCIENT_DEBRIS) {
+                                entry.getKey().getBlock().setType(entry.getValue());
+                            } else {
+                                entry.getKey().getBlock().setType(Material.AIR);
+                            }
+                            ignoredBlocks.clear();
+                        }
+                    }
+                }
+            }
+        }
     }
+
 
     private void spawnSphere(Location location) {
         HashMap<Location, Material> blocks = new HashMap<>();
@@ -694,6 +913,12 @@ public final class HolyTNT extends JavaPlugin implements Listener {
         tntPrimed.setCustomName("C4");
     }
 
+    private void spawnB2TNT(Location location) {
+        TNTPrimed tntPrimed = location.getBlock().getWorld().spawn(location.add(0.5, 0, 0.5), TNTPrimed.class);
+        tntPrimed.setFuseTicks(200);
+        tntPrimed.setCustomName("B2");
+    }
+
     private void spawnRVTNT(Location location) {
         TNTPrimed tntPrimed = location.getBlock().getWorld().spawn(location.add(0.5, 0, 0.5), TNTPrimed.class);
         tntPrimed.setFuseTicks(140);
@@ -730,6 +955,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
         configData.coordsB.putAll(coordsB);
         configData.coordsRV.putAll(coordsRV);
         configData.coordsLV.putAll(coordsLV);
+        configData.coordsB2.putAll(coordsB2);
         saveTNTConfig();
     }
 }

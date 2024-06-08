@@ -24,6 +24,9 @@ public class ConfigData {
     Map<String, String> coordsA = new HashMap<>();
 
     @Expose
+    Map<String, String> coordsB2 = new HashMap<>();
+
+    @Expose
     Map<String, String> regions = new HashMap<>();
 
     @Expose
@@ -95,6 +98,14 @@ public class ConfigData {
 
     public Map<String, String> getCoordsA() {
         return coordsA;
+    }
+
+    public Map<String, String> getCoordsB2() {
+        return coordsB2;
+    }
+
+    public void setCoordsB2(Map<String, String> coordsB2) {
+        this.coordsB2 = coordsB2;
     }
 }
 
