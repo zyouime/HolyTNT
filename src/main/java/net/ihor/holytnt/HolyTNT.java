@@ -17,7 +17,6 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.Event;
@@ -36,10 +35,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.BiFunction;
 
 public final class HolyTNT extends JavaPlugin implements Listener {
     private Map<String, String> coordsC4 = new HashMap<>();
@@ -280,152 +277,49 @@ public final class HolyTNT extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void pistoneTNT(BlockPistonExtendEvent event) {
-        BlockFace storonaSveta = event.getDirection();
-        UUID uuid = UUID.randomUUID();
+    public void pistoneTNTExtend(BlockPistonExtendEvent event) {
+        Map<String, String> tntPistonLV = new HashMap<>();
+        Map<String, String> tntPistonRV = new HashMap<>();
+        Map<String, String> tntPistonA = new HashMap<>();
+        Map<String, String> tntPistonB = new HashMap<>();
+        Map<String, String> tntPistonB2 = new HashMap<>();
+        Map<String, String> tntPistonC4 = new HashMap<>();
+        BlockFace blockFace = event.getDirection();
         for (Block block : event.getBlocks()) {
-            if (block.getType() == Material.TNT) {
-                Location location = block.getLocation();
+            Location location = block.getLocation();
+            if (block.getLocation().getBlock().getType() == Material.TNT) {
                 if (coordsLV.containsKey(location.toString())) {
                     coordsLV.remove(location.toString());
-                    configData.coordsLV.remove(location.toString());
-                    if (storonaSveta == BlockFace.NORTH) {
-                        location.add(0, 0, -1);
-                    }
-                    if (storonaSveta == BlockFace.SOUTH) {
-                        location.add(0, 0, 1);
-                    }
-                    if (storonaSveta == BlockFace.EAST) {
-                        location.add(1, 0, 0);
-                    }
-                    if (storonaSveta == BlockFace.WEST) {
-                        location.add(-1, 0, 0);
-                    }
-                    if (storonaSveta == BlockFace.UP) {
-                        location.add(0, 1, 0);
-                    }
-                    if (storonaSveta == BlockFace.DOWN) {
-                        location.add(0, -1, 0);
-                    }
-                    coordsLV.put(location.toString(), uuid.toString());
+                    tntPistonLV.put(block.getLocation().add(blockFace.getModX(), blockFace.getModY(), blockFace.getModZ()).toString(), UUID.randomUUID().toString());
                 }
                 if (coordsRV.containsKey(location.toString())) {
                     coordsRV.remove(location.toString());
-                    configData.coordsRV.remove(location.toString());
-                    if (storonaSveta == BlockFace.NORTH) {
-                        location.add(0, 0, -1);
-                    }
-                    if (storonaSveta == BlockFace.SOUTH) {
-                        location.add(0, 0, 1);
-                    }
-                    if (storonaSveta == BlockFace.EAST) {
-                        location.add(1, 0, 0);
-                    }
-                    if (storonaSveta == BlockFace.WEST) {
-                        location.add(-1, 0, 0);
-                    }
-                    if (storonaSveta == BlockFace.UP) {
-                        location.add(0, 1, 0);
-                    }
-                    if (storonaSveta == BlockFace.DOWN) {
-                        location.add(0, -1, 0);
-                    }
-                    coordsRV.put(location.toString(), uuid.toString());
+                    tntPistonRV.put(block.getLocation().add(blockFace.getModX(), blockFace.getModY(), blockFace.getModZ()).toString(), UUID.randomUUID().toString());
                 }
                 if (coordsA.containsKey(location.toString())) {
                     coordsA.remove(location.toString());
-                    configData.coordsA.remove(location.toString());
-                    if (storonaSveta == BlockFace.NORTH) {
-                        location.add(0, 0, -1);
-                    }
-                    if (storonaSveta == BlockFace.SOUTH) {
-                        location.add(0, 0, 1);
-                    }
-                    if (storonaSveta == BlockFace.EAST) {
-                        location.add(1, 0, 0);
-                    }
-                    if (storonaSveta == BlockFace.WEST) {
-                        location.add(-1, 0, 0);
-                    }
-                    if (storonaSveta == BlockFace.UP) {
-                        location.add(0, 1, 0);
-                    }
-                    if (storonaSveta == BlockFace.DOWN) {
-                        location.add(0, -1, 0);
-                    }
-                    coordsA.put(location.toString(), uuid.toString());
+                    tntPistonA.put(block.getLocation().add(blockFace.getModX(), blockFace.getModY(), blockFace.getModZ()).toString(), UUID.randomUUID().toString());
                 }
                 if (coordsB.containsKey(location.toString())) {
                     coordsB.remove(location.toString());
-                    configData.coordsB.remove(location.toString());
-                    if (storonaSveta == BlockFace.NORTH) {
-                        location.add(0, 0, -1);
-                    }
-                    if (storonaSveta == BlockFace.SOUTH) {
-                        location.add(0, 0, 1);
-                    }
-                    if (storonaSveta == BlockFace.EAST) {
-                        location.add(1, 0, 0);
-                    }
-                    if (storonaSveta == BlockFace.WEST) {
-                        location.add(-1, 0, 0);
-                    }
-                    if (storonaSveta == BlockFace.UP) {
-                        location.add(0, 1, 0);
-                    }
-                    if (storonaSveta == BlockFace.DOWN) {
-                        location.add(0, -1, 0);
-                    }
-                    coordsB.put(location.toString(), uuid.toString());
+                    tntPistonB.put(block.getLocation().add(blockFace.getModX(), blockFace.getModY(), blockFace.getModZ()).toString(), UUID.randomUUID().toString());
                 }
                 if (coordsB2.containsKey(location.toString())) {
                     coordsB2.remove(location.toString());
-                    configData.coordsB2.remove(location.toString());
-                    if (storonaSveta == BlockFace.NORTH) {
-                        location.add(0, 0, -1);
-                    }
-                    if (storonaSveta == BlockFace.SOUTH) {
-                        location.add(0, 0, 1);
-                    }
-                    if (storonaSveta == BlockFace.EAST) {
-                        location.add(1, 0, 0);
-                    }
-                    if (storonaSveta == BlockFace.WEST) {
-                        location.add(-1, 0, 0);
-                    }
-                    if (storonaSveta == BlockFace.UP) {
-                        location.add(0, 1, 0);
-                    }
-                    if (storonaSveta == BlockFace.DOWN) {
-                        location.add(0, -1, 0);
-                    }
-                    coordsB2.put(location.toString(), uuid.toString());
+                    tntPistonB2.put(block.getLocation().add(blockFace.getModX(), blockFace.getModY(), blockFace.getModZ()).toString(), UUID.randomUUID().toString());
                 }
                 if (coordsC4.containsKey(location.toString())) {
                     coordsC4.remove(location.toString());
-                    configData.coordsC4.remove(location.toString());
-                    if (storonaSveta == BlockFace.NORTH) {
-                        location.add(0, 0, -1);
-                    }
-                    if (storonaSveta == BlockFace.SOUTH) {
-                        location.add(0, 0, 1);
-                    }
-                    if (storonaSveta == BlockFace.EAST) {
-                        location.add(1, 0, 0);
-                    }
-                    if (storonaSveta == BlockFace.WEST) {
-                        location.add(-1, 0, 0);
-                    }
-                    if (storonaSveta == BlockFace.UP) {
-                        location.add(0, 1, 0);
-                    }
-                    if (storonaSveta == BlockFace.DOWN) {
-                        location.add(0, -1, 0);
-                    }
-                    coordsC4.put(location.toString(), uuid.toString());
+                    tntPistonC4.put(block.getLocation().add(blockFace.getModX(), blockFace.getModY(), blockFace.getModZ()).toString(), UUID.randomUUID().toString());
                 }
             }
         }
+        coordsLV.putAll(tntPistonLV);
+        coordsRV.putAll(tntPistonRV);
+        coordsC4.putAll(tntPistonC4);
+        coordsA.putAll(tntPistonA);
+        coordsB2.putAll(tntPistonB2);
+        coordsB.putAll(tntPistonB);
     }
     @EventHandler
     public void customTNTDispanser(BlockDispenseEvent event) {
