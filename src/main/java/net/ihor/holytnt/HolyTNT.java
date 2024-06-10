@@ -287,7 +287,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
         BlockFace blockFace = event.getDirection();
         for (Block block : event.getBlocks()) {
             Location location = block.getLocation();
-            if (block.getLocation().getBlock().getType() == Material.TNT) {
+            if (location.getBlock().getType() == Material.TNT) {
                 if (coordsLV.containsKey(location.toString())) {
                     coordsLV.remove(location.toString());
                     tntPistonLV.put(block.getLocation().add(blockFace.getModX(), blockFace.getModY(), blockFace.getModZ()).toString(), UUID.randomUUID().toString());
