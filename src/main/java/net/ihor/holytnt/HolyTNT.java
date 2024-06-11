@@ -4,6 +4,7 @@ import com.destroystokyo.paper.event.block.TNTPrimeEvent;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldguard.WorldGuard;
@@ -15,6 +16,7 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionType;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -33,6 +35,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.awt.geom.Area;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -146,12 +149,20 @@ public final class HolyTNT extends JavaPlugin implements Listener {
             BlockVector3 min = BlockVector3.at(event.getBlock().getX() - radius, event.getBlock().getY() - radius, event.getBlock().getZ() - radius);
             BlockVector3 max = BlockVector3.at(event.getBlock().getX() + radius, event.getBlock().getY() + radius, event.getBlock().getZ() + radius);
             BlockVector3 center = BlockVector3.at((min.getBlockX() + max.getBlockX()) / 2, (min.getBlockY() + max.getBlockY()) / 2, (min.getBlockZ() + max.getBlockZ()) / 2);
-            ApplicableRegionSet set = manager.getApplicableRegions(center);
-            if (!set.getRegions().isEmpty()) {
+            ProtectedCuboidRegion region = new ProtectedCuboidRegion(id, min, max);
+            boolean intersects = false;
+            for (ProtectedRegion region1 : manager.getRegions().values()) {
+                if (regionsIntersect(region1, region)) {
+                    intersects = true;
+                    break;
+                }
+            }
+
+            if (intersects) {
                 event.setCancelled(true);
+                event.getPlayer().sendMessage("Ты регион пересекаешь, еблан");
                 return;
             }
-                ProtectedCuboidRegion region = new ProtectedCuboidRegion(id, min, max);
                 region.setFlag(Flags.TNT, StateFlag.State.ALLOW);
                 DefaultDomain domain = new DefaultDomain();
                 domain.addPlayer(event.getPlayer().getName());
@@ -838,6 +849,18 @@ public final class HolyTNT extends JavaPlugin implements Listener {
         tntPrimed.setYield(40);
         tntPrimed.setCustomName("B");
     }
+
+    private boolean regionsIntersect(ProtectedRegion region1, ProtectedRegion region2) {
+        BlockVector3 min1 = region1.getMinimumPoint();
+        BlockVector3 max1 = region1.getMaximumPoint();
+        BlockVector3 min2 = region2.getMinimumPoint();
+        BlockVector3 max2 = region2.getMaximumPoint();
+
+        return min1.getBlockX() <= max2.getBlockX() && max1.getBlockX() >= min2.getBlockX() &&
+                min1.getBlockY() <= max2.getBlockY() && max1.getBlockY() >= min2.getBlockY() &&
+                min1.getBlockZ() <= max2.getBlockZ() && max1.getBlockZ() >= min2.getBlockZ();
+    }
+
 
     @Override
     public void onDisable() {
