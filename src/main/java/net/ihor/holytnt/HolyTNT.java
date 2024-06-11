@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -12,6 +13,7 @@ import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -147,8 +149,8 @@ public final class HolyTNT extends JavaPlugin implements Listener {
             ApplicableRegionSet set = manager.getApplicableRegions(center);
             if (!set.getRegions().isEmpty()) {
                 event.setCancelled(true);
-                event.getPlayer().sendMessage("Ты регион пересекаешь, еблан");
-            } else {
+                return;
+            }
                 ProtectedCuboidRegion region = new ProtectedCuboidRegion(id, min, max);
                 region.setFlag(Flags.TNT, StateFlag.State.ALLOW);
                 DefaultDomain domain = new DefaultDomain();
@@ -167,8 +169,6 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                 durabilityMap.put(id, 4);
             }
         }
-    }
-
     @EventHandler
     public void BlockBreakEvent(BlockBreakEvent event) {
         String id = regions.get(event.getBlock().getLocation().toString());
