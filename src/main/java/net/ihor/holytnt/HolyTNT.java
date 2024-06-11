@@ -339,40 +339,27 @@ public final class HolyTNT extends JavaPlugin implements Listener {
     @EventHandler
     public void customTNTDispanser(BlockDispenseEvent event) {
         if (event.getItem().getItemMeta() != null) {
+            Dispenser dispenser = (Dispenser) event.getBlock().getState();
+            Inventory inventory = dispenser.getInventory();
             if (event.getItem().getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntc4"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
                 Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
                 spawnC4TNT(location);
                 event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
-                Dispenser dispenser = (Dispenser) event.getBlock().getState();
-                Inventory inventory = dispenser.getInventory();
-                for (ItemStack stack : inventory) {
-                    stack.setAmount(stack.getAmount() - 1);
-                    break;
-                }
+                inventory.removeItem(event.getItem());
                 event.setCancelled(true);
             }
             if (event.getItem().getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtnta"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
                 Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
                 spawnATNT(location);
                 event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
-                Dispenser dispenser = (Dispenser) event.getBlock().getState();
-                Inventory inventory = dispenser.getInventory();
-                for (ItemStack stack : inventory) {
-                    stack.setAmount(stack.getAmount() - 1);
-                    break;
-                }
+                inventory.removeItem(event.getItem());
                 event.setCancelled(true);
             }
             if (event.getItem().getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntb"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
                 Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
                 spawnBTNT(location);
                 event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
-                Dispenser dispenser = (Dispenser) event.getBlock().getState();
-                Inventory inventory = dispenser.getInventory();
-                for (ItemStack stack : inventory) {
-                    stack.setAmount(stack.getAmount() - 1);
-                    break;
-                }
+                inventory.removeItem(event.getItem());
                 event.setCancelled(true);
 
             }
@@ -380,36 +367,21 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                 Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
                 spawnRVTNT(location);
                 event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
-                Dispenser dispenser = (Dispenser) event.getBlock().getState();
-                Inventory inventory = dispenser.getInventory();
-                for (ItemStack stack : inventory) {
-                    stack.setAmount(stack.getAmount() - 1);
-                    break;
-                }
+                inventory.removeItem(event.getItem());
                 event.setCancelled(true);
             }
             if (event.getItem().getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntlv"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
                 Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
                 spawnLVTNT(location);
                 event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
-                Dispenser dispenser = (Dispenser) event.getBlock().getState();
-                Inventory inventory = dispenser.getInventory();
-                for (ItemStack stack : inventory) {
-                    stack.setAmount(stack.getAmount() - 1);
-                    break;
-                }
+                inventory.removeItem(event.getItem());
                 event.setCancelled(true);
             }
             if (event.getItem().getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntb2"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
                 Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
                 spawnB2TNT(location);
                 event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
-                Dispenser dispenser = (Dispenser) event.getBlock().getState();
-                Inventory inventory = dispenser.getInventory();
-                for (ItemStack stack : inventory) {
-                    stack.setAmount(stack.getAmount() - 1);
-                    break;
-                }
+                inventory.removeItem(event.getItem());
                 event.setCancelled(true);
             }
         }
