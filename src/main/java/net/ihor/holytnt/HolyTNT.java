@@ -336,6 +336,52 @@ public final class HolyTNT extends JavaPlugin implements Listener {
         coordsB2.putAll(tntPistonB2);
         coordsB.putAll(tntPistonB);
     }
+
+    @EventHandler
+    public void pistoneTNTRetract(BlockPistonRetractEvent event) {
+        Map<String, String> tntPistonLV = new HashMap<>();
+        Map<String, String> tntPistonRV = new HashMap<>();
+        Map<String, String> tntPistonA = new HashMap<>();
+        Map<String, String> tntPistonB = new HashMap<>();
+        Map<String, String> tntPistonB2 = new HashMap<>();
+        Map<String, String> tntPistonC4 = new HashMap<>();
+        BlockFace blockFace = event.getDirection();
+        for (Block block : event.getBlocks()) {
+            Location location = block.getLocation();
+            if (location.getBlock().getType() == Material.TNT) {
+                if (coordsLV.containsKey(location.toString())) {
+                    coordsLV.remove(location.toString());
+                    tntPistonLV.put(block.getLocation().add(blockFace.getModX(), blockFace.getModY(), blockFace.getModZ()).toString(), UUID.randomUUID().toString());
+                }
+                if (coordsRV.containsKey(location.toString())) {
+                    coordsRV.remove(location.toString());
+                    tntPistonRV.put(block.getLocation().add(blockFace.getModX(), blockFace.getModY(), blockFace.getModZ()).toString(), UUID.randomUUID().toString());
+                }
+                if (coordsA.containsKey(location.toString())) {
+                    coordsA.remove(location.toString());
+                    tntPistonA.put(block.getLocation().add(blockFace.getModX(), blockFace.getModY(), blockFace.getModZ()).toString(), UUID.randomUUID().toString());
+                }
+                if (coordsB.containsKey(location.toString())) {
+                    coordsB.remove(location.toString());
+                    tntPistonB.put(block.getLocation().add(blockFace.getModX(), blockFace.getModY(), blockFace.getModZ()).toString(), UUID.randomUUID().toString());
+                }
+                if (coordsB2.containsKey(location.toString())) {
+                    coordsB2.remove(location.toString());
+                    tntPistonB2.put(block.getLocation().add(blockFace.getModX(), blockFace.getModY(), blockFace.getModZ()).toString(), UUID.randomUUID().toString());
+                }
+                if (coordsC4.containsKey(location.toString())) {
+                    coordsC4.remove(location.toString());
+                    tntPistonC4.put(block.getLocation().add(blockFace.getModX(), blockFace.getModY(), blockFace.getModZ()).toString(), UUID.randomUUID().toString());
+                }
+            }
+        }
+        coordsLV.putAll(tntPistonLV);
+        coordsRV.putAll(tntPistonRV);
+        coordsC4.putAll(tntPistonC4);
+        coordsA.putAll(tntPistonA);
+        coordsB2.putAll(tntPistonB2);
+        coordsB.putAll(tntPistonB);
+    }
     @EventHandler
     public void customTNTDispanser(BlockDispenseEvent event) {
         if (event.getItem().getItemMeta() != null) {
