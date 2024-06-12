@@ -750,7 +750,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                         Map<Location, Material> ignoredBlocks = new HashMap<>();
                         ignoredBlocks.put(location.clone(), location.getBlock().getType());
                         for (Map.Entry<Location, Material> entry : ignoredBlocks.entrySet()) {
-                            if (entry.getKey().getBlock().getType() == Material.BEDROCK || entry.getKey().getBlock().getType() == Material.ANCIENT_DEBRIS) {
+                            if (entry.getKey().getBlock().getType() == Material.BEDROCK || entry.getKey().getBlock().getType() == Material.ANCIENT_DEBRIS || entry.getKey().getBlock().getType() == Material.OBSIDIAN) {
                                 entry.getKey().getBlock().setType(entry.getValue());
                             } else {
                                 entry.getKey().getBlock().setType(Material.AIR);
