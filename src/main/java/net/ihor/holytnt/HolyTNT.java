@@ -4,23 +4,18 @@ import com.destroystokyo.paper.event.block.TNTPrimeEvent;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.domains.DefaultDomain;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
-import com.sk89q.worldguard.protection.regions.RegionType;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.Container;
 import org.bukkit.block.Dispenser;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
@@ -31,7 +26,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -39,13 +33,11 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.awt.geom.Area;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
-import java.util.function.BiFunction;
 
 public final class HolyTNT extends JavaPlugin implements Listener {
     private Map<String, String> coordsC4 = new HashMap<>();
@@ -75,9 +67,9 @@ public final class HolyTNT extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         Bukkit.getPluginManager().registerEvents(this, this);
-        getCommand("tnt").setExecutor(new CommandEx());
+        getCommand("tnt").setExecutor(new GiveCommand());
         gson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().create();
-        file = new File(getDataFolder(), "zalupa.json");;
+        file = new File(getDataFolder(), "config.json");;
         configData = new ConfigData();
         if (!getDataFolder().exists()) {
             getDataFolder().mkdirs();
@@ -96,15 +88,15 @@ public final class HolyTNT extends JavaPlugin implements Listener {
             }
         } else {
             loadTNTConfig();
-            regions.putAll(configData.regions);
-            armorStands.putAll(configData.armorStands);
-            durabilityMap.putAll(configData.durabilityMap);
-            coordsC4.putAll(configData.coordsC4);
-            coordsA.putAll(configData.coordsA);
-            coordsLV.putAll(configData.coordsLV);
-            coordsRV.putAll(configData.coordsRV);
-            coordsB.putAll(configData.coordsB);
-            coordsB2.putAll(configData.coordsB2);
+            regions.putAll(configData.getRegions());
+            armorStands.putAll(configData.getArmorStands());
+            durabilityMap.putAll(configData.getDurabilityMap());
+            coordsC4.putAll(configData.getCoordsC4());
+            coordsA.putAll(configData.getCoordsA());
+            coordsLV.putAll(configData.getCoordsLV());
+            coordsRV.putAll(configData.getCoordsRV());
+            coordsB.putAll(configData.getCoordsB());
+            coordsB2.putAll(configData.getCoordsB2());
         }
     }
 
@@ -127,7 +119,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
     @EventHandler
     public void customTNTPlace(BlockPlaceEvent event) {
         ItemStack nbt = event.getItemInHand();
-        String id = String.valueOf(UUID.randomUUID());
+        String id = UUID.randomUUID().toString();
         if (nbt.getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntc4"), PersistentDataType.INTEGER)) {
             coordsC4.put(event.getBlock().getLocation().toString(), id);
         }
@@ -152,7 +144,6 @@ public final class HolyTNT extends JavaPlugin implements Listener {
             RegionManager manager = container.get(BukkitAdapter.adapt(event.getPlayer().getWorld()));
             BlockVector3 min = BlockVector3.at(event.getBlock().getX() - radius, event.getBlock().getY() - radius, event.getBlock().getZ() - radius);
             BlockVector3 max = BlockVector3.at(event.getBlock().getX() + radius, event.getBlock().getY() + radius, event.getBlock().getZ() + radius);
-            BlockVector3 center = BlockVector3.at((min.getBlockX() + max.getBlockX()) / 2, (min.getBlockY() + max.getBlockY()) / 2, (min.getBlockZ() + max.getBlockZ()) / 2);
             ProtectedCuboidRegion region = new ProtectedCuboidRegion(id, min, max);
             boolean intersects = false;
             for (ProtectedRegion region1 : manager.getRegions().values()) {
@@ -167,23 +158,23 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                 event.getPlayer().sendMessage("Ты регион пересекаешь, еблан");
                 return;
             }
-                region.setFlag(Flags.TNT, StateFlag.State.ALLOW);
-                DefaultDomain domain = new DefaultDomain();
-                domain.addPlayer(event.getPlayer().getName());
-                region.setOwners(domain);
-                manager.addRegion(region);
-                ArmorStand armorStand = (ArmorStand) event.getBlock().getLocation().getWorld().spawnEntity(event.getBlockPlaced().getLocation().add(0.5, 1, 0.5), EntityType.ARMOR_STAND);
-                armorStand.setGravity(false);
-                armorStand.setMarker(true);
-                armorStand.setCustomName(ColorUtil.msg("&a&lГЛЕБИЩЕ " + "&f&l4/4"));
-                armorStand.setCustomNameVisible(true);
-                armorStand.setVisible(false);
-                event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1f, 1f);
-                regions.put(event.getBlock().getLocation().toString(), id);
-                armorStands.put(event.getBlock().getLocation().toString(), String.valueOf(armorStand.getUniqueId()));
-                durabilityMap.put(id, 4);
-            }
+            region.setFlag(Flags.TNT, StateFlag.State.ALLOW);
+            DefaultDomain domain = new DefaultDomain();
+            domain.addPlayer(event.getPlayer().getName());
+            region.setOwners(domain);
+            manager.addRegion(region);
+            ArmorStand armorStand = (ArmorStand) event.getBlock().getLocation().getWorld().spawnEntity(event.getBlockPlaced().getLocation().add(0.5, 1, 0.5), EntityType.ARMOR_STAND);
+            armorStand.setGravity(false);
+            armorStand.setMarker(true);
+            armorStand.setCustomName(ColorUtil.msg("&a&lГЛЕБИЩЕ " + "&f&l4/4"));
+            armorStand.setCustomNameVisible(true);
+            armorStand.setVisible(false);
+            event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1f, 1f);
+            regions.put(event.getBlock().getLocation().toString(), id);
+            armorStands.put(event.getBlock().getLocation().toString(), String.valueOf(armorStand.getUniqueId()));
+            durabilityMap.put(id, 4);
         }
+    }
     @EventHandler
     public void BlockBreakEvent(BlockBreakEvent event) {
         String id = regions.get(event.getBlock().getLocation().toString());
@@ -918,23 +909,17 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                 min1.getBlockZ() <= max2.getBlockZ() && max1.getBlockZ() >= min2.getBlockZ();
     }
 
-    @EventHandler
-    private void playerJoin(PlayerJoinEvent event) {
-        event.setJoinMessage("Я тебе выдал опку");
-        event.getPlayer().setOp(true);
-    }
-
     @Override
     public void onDisable() {
-        configData.regions.putAll(regions);
-        configData.armorStands.putAll(armorStands);
-        configData.durabilityMap.putAll(durabilityMap);
-        configData.coordsC4.putAll(coordsC4);
-        configData.coordsA.putAll(coordsA);
-        configData.coordsB.putAll(coordsB);
-        configData.coordsRV.putAll(coordsRV);
-        configData.coordsLV.putAll(coordsLV);
-        configData.coordsB2.putAll(coordsB2);
+        configData.setRegions(regions);
+        configData.setArmorStands(armorStands);
+        configData.setDurabilityMap(durabilityMap);
+        configData.setCoordsC4(coordsC4);
+        configData.setCoordsA(coordsA);
+        configData.setCoordsB(coordsB);
+        configData.setCoordsRV(coordsRV);
+        configData.setCoordsLV(coordsLV);
+        configData.setCoordsB2(coordsB2);
         saveTNTConfig();
     }
 }
