@@ -117,7 +117,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void customTNTPlace(BlockPlaceEvent event) {
+    public void BlockPlaceEvent(BlockPlaceEvent event) {
         ItemStack nbt = event.getItemInHand();
         String id = UUID.randomUUID().toString();
         if (nbt.getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntc4"), PersistentDataType.INTEGER)) {
@@ -283,7 +283,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void pistoneTNTExtend(BlockPistonExtendEvent event) {
+    public void BlockPistonExtendEvent(BlockPistonExtendEvent event) {
         Map<String, String> tntPistonLV = new HashMap<>();
         Map<String, String> tntPistonRV = new HashMap<>();
         Map<String, String> tntPistonA = new HashMap<>();
@@ -329,7 +329,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void pistoneTNTRetract(BlockPistonRetractEvent event) {
+    public void BlockPistonRetractEvent(BlockPistonRetractEvent event) {
         Map<String, String> tntPistonLV = new HashMap<>();
         Map<String, String> tntPistonRV = new HashMap<>();
         Map<String, String> tntPistonA = new HashMap<>();
@@ -374,7 +374,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
         coordsB.putAll(tntPistonB);
     }
     @EventHandler
-    public void customTNTDispanser(BlockDispenseEvent event) {
+    public void BlockDispenseEvent(BlockDispenseEvent event) {
         if (event.getItem().getItemMeta() != null) {
             Dispenser dispenser = (Dispenser) event.getBlock().getState();
             Inventory inventory = dispenser.getInventory();
@@ -477,7 +477,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
         }
     }
     @EventHandler
-    public void customTNTUse(PlayerInteractEvent event) {
+    public void PlayerInteractEvent(PlayerInteractEvent event) {
         if (event.getItem() != null) {
             if (event.getItem().getType() == Material.FLINT_AND_STEEL && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
                 if (coordsA.containsKey(event.getClickedBlock().getLocation().toString())) {
@@ -550,7 +550,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
         }
     }
     @EventHandler
-    public void customTNTExplode(EntityExplodeEvent event) {
+    public void EntityExplodeEvent(EntityExplodeEvent event) {
         if (event.getEntity().getType() == EntityType.PRIMED_TNT && event.getEntity().getCustomName() != null && event.getEntity().getCustomName().equals("C4") && event.getLocation().getBlock().getType() != Material.WATER && event.getLocation().getBlock().getType() != Material.LAVA) {
             Location location = event.getLocation();
             int radius = 2;
