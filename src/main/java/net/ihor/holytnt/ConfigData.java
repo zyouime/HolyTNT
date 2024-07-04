@@ -17,6 +17,7 @@ public class ConfigData {
 
     @Expose
     Map<String, String> coordsLV = new HashMap<>();
+
     @Expose
     Map<String, String> coordsB = new HashMap<>();
 

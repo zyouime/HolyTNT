@@ -5,8 +5,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.domains.DefaultDomain;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
@@ -118,6 +120,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
 
     @EventHandler
     public void BlockPlaceEvent(BlockPlaceEvent event) {
+
         ItemStack nbt = event.getItemInHand();
         String id = UUID.randomUUID().toString();
         if (nbt.getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntc4"), PersistentDataType.INTEGER)) {
@@ -171,6 +174,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
             armorStand.setVisible(false);
             event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1f, 1f);
             regions.put(event.getBlock().getLocation().toString(), id);
+            System.out.println(regions);
             armorStands.put(event.getBlock().getLocation().toString(), String.valueOf(armorStand.getUniqueId()));
             durabilityMap.put(id, 4);
         }
@@ -380,21 +384,21 @@ public final class HolyTNT extends JavaPlugin implements Listener {
             Inventory inventory = dispenser.getInventory();
             if (event.getItem().getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntc4"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
                 Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
-                spawnC4TNT(location);
+                SpawnCustomTNT.spawnC4TNT(location);
                 event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
                 inventory.removeItem(event.getItem());
                 event.setCancelled(true);
             }
             if (event.getItem().getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtnta"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
                 Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
-                spawnATNT(location);
+                SpawnCustomTNT.spawnATNT(location);
                 event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
                 inventory.removeItem(event.getItem());
                 event.setCancelled(true);
             }
             if (event.getItem().getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntb"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
                 Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
-                spawnBTNT(location);
+                SpawnCustomTNT.spawnBTNT(location);
                 event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
                 inventory.removeItem(event.getItem());
                 event.setCancelled(true);
@@ -402,21 +406,21 @@ public final class HolyTNT extends JavaPlugin implements Listener {
             }
             if (event.getItem().getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntrv"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
                 Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
-                spawnRVTNT(location);
+                SpawnCustomTNT.spawnRVTNT(location);
                 event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
                 inventory.removeItem(event.getItem());
                 event.setCancelled(true);
             }
             if (event.getItem().getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntlv"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
                 Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
-                spawnLVTNT(location);
+                SpawnCustomTNT.spawnLVTNT(location);
                 event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
                 inventory.removeItem(event.getItem());
                 event.setCancelled(true);
             }
             if (event.getItem().getItemMeta().getPersistentDataContainer().has(NamespacedKey.minecraft("customtntb2"), PersistentDataType.INTEGER) && event.getBlock().getType() == Material.DISPENSER) {
                 Location location = event.getVelocity().toLocation(event.getBlock().getWorld()).add(-0.5, 0, -0.5);
-                spawnB2TNT(location);
+                SpawnCustomTNT.spawnB2TNT(location);
                 event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
                 inventory.removeItem(event.getItem());
                 event.setCancelled(true);
@@ -430,7 +434,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
         if (coordsC4.containsKey(event.getBlock().getLocation().toString())) {
             event.setCancelled(true);
             event.getBlock().setType(Material.AIR);
-            spawnC4TNT(event.getBlock().getLocation());
+            SpawnCustomTNT.spawnC4TNT(event.getBlock().getLocation());
             event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
             coordsC4.remove(event.getBlock().getLocation().toString());
             configData.coordsC4.remove(event.getBlock().getLocation().toString());
@@ -438,7 +442,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
         if (coordsB.containsKey(event.getBlock().getLocation().toString())) {
             event.setCancelled(true);
             event.getBlock().setType(Material.AIR);
-            spawnBTNT(event.getBlock().getLocation());
+            SpawnCustomTNT.spawnBTNT(event.getBlock().getLocation());
             event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
             coordsB.remove(event.getBlock().getLocation().toString());
             configData.coordsB.remove(event.getBlock().getLocation().toString());
@@ -446,7 +450,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
         if (coordsA.containsKey(event.getBlock().getLocation().toString())) {
             event.setCancelled(true);
             event.getBlock().setType(Material.AIR);
-            spawnATNT(event.getBlock().getLocation());
+            SpawnCustomTNT.spawnATNT(event.getBlock().getLocation());
             event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
             coordsA.remove(event.getBlock().getLocation().toString());
             configData.coordsA.remove(event.getBlock().getLocation().toString());
@@ -454,7 +458,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
         if (coordsRV.containsKey(event.getBlock().getLocation().toString())) {
             event.setCancelled(true);
             event.getBlock().setType(Material.AIR);
-            spawnRVTNT(event.getBlock().getLocation());
+            SpawnCustomTNT.spawnRVTNT(event.getBlock().getLocation());
             event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
             coordsRV.remove(event.getBlock().getLocation().toString());
             configData.coordsRV.remove(event.getBlock().getLocation().toString());
@@ -462,7 +466,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
         if (coordsLV.containsKey(event.getBlock().getLocation().toString())) {
             event.setCancelled(true);
             event.getBlock().setType(Material.AIR);
-            spawnLVTNT(event.getBlock().getLocation());
+            SpawnCustomTNT.spawnLVTNT(event.getBlock().getLocation());
             event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
             coordsLV.remove(event.getBlock().getLocation().toString());
             configData.coordsLV.remove(event.getBlock().getLocation().toString());
@@ -470,7 +474,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
         if (coordsB2.containsKey(event.getBlock().getLocation().toString())) {
             event.setCancelled(true);
             event.getBlock().setType(Material.AIR);
-            spawnB2TNT(event.getBlock().getLocation());
+            SpawnCustomTNT.spawnB2TNT(event.getBlock().getLocation());
             event.getBlock().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
             coordsB2.remove(event.getBlock().getLocation().toString());
             configData.coordsB2.remove(event.getBlock().getLocation().toString());
@@ -486,7 +490,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                         event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
                     }
                     event.getClickedBlock().setType(Material.AIR);
-                    spawnATNT(event.getClickedBlock().getLocation());
+                    SpawnCustomTNT.spawnATNT(event.getClickedBlock().getLocation());
                     event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
                     coordsA.remove(event.getClickedBlock().getLocation().toString());
                     configData.coordsA.remove(event.getClickedBlock().getLocation().toString());
@@ -497,7 +501,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                         event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
                     }
                     event.getClickedBlock().setType(Material.AIR);
-                    spawnB2TNT(event.getClickedBlock().getLocation());
+                    SpawnCustomTNT.spawnB2TNT(event.getClickedBlock().getLocation());
                     event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
                     coordsB2.remove(event.getClickedBlock().getLocation().toString());
                     configData.coordsB2.remove(event.getClickedBlock().getLocation().toString());
@@ -508,7 +512,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                         event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
                     }
                     event.getClickedBlock().setType(Material.AIR);
-                    spawnLVTNT(event.getClickedBlock().getLocation());
+                    SpawnCustomTNT.spawnLVTNT(event.getClickedBlock().getLocation());
                     event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
                     coordsLV.remove(event.getClickedBlock().getLocation().toString());
                     configData.coordsLV.remove(event.getClickedBlock().getLocation().toString());
@@ -519,7 +523,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                         event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
                     }
                     event.getClickedBlock().setType(Material.AIR);
-                    spawnRVTNT(event.getClickedBlock().getLocation());
+                    SpawnCustomTNT.spawnRVTNT(event.getClickedBlock().getLocation());
                     event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
                     coordsRV.remove(event.getClickedBlock().getLocation().toString());
                     configData.coordsRV.remove(event.getClickedBlock().getLocation().toString());
@@ -530,7 +534,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                         event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
                     }
                     event.getClickedBlock().setType(Material.AIR);
-                    spawnBTNT(event.getClickedBlock().getLocation());
+                    SpawnCustomTNT.spawnBTNT(event.getClickedBlock().getLocation());
                     event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
                     coordsB.remove(event.getClickedBlock().getLocation().toString());
                     configData.coordsB.remove(event.getClickedBlock().getLocation().toString());
@@ -541,7 +545,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                         event.getItem().setDurability((short) (event.getItem().getDurability() + 1));
                     }
                     event.getClickedBlock().setType(Material.AIR);
-                    spawnC4TNT(event.getClickedBlock().getLocation());
+                    SpawnCustomTNT.spawnC4TNT(event.getClickedBlock().getLocation());
                     event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ENTITY_TNT_PRIMED, 1f, 1f);
                     coordsC4.remove(event.getClickedBlock().getLocation().toString());
                     configData.coordsC4.remove(event.getClickedBlock().getLocation().toString());
@@ -558,12 +562,24 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                 for (int y = -radius; y <= radius; y++) {
                     for (int z = -radius; z <= radius; z++) {
                         Location loc = location.clone().add(x, y, z);
+                        String region = regions.get(loc.getBlock().getLocation().toString());
                         if (loc.getBlock().getType() == Material.OBSIDIAN) {
                             loc.getBlock().setType(Material.AIR);
                             loc.getBlock().getWorld().dropItem(loc, new ItemStack(Material.OBSIDIAN));
                         } else if (loc.getBlock().getType() == Material.CRYING_OBSIDIAN) {
                             loc.getBlock().setType(Material.AIR);
                             loc.getBlock().getWorld().dropItem(loc, new ItemStack(Material.CRYING_OBSIDIAN));
+                        }
+                        for (String s : regions.values()) {
+                            if (s.equals(regions.get(loc.getBlock().getLocation().toString()))) {
+                                region = s;
+                            }
+                        }
+                        if (region == null) {
+                            if (loc.getBlock().getType() == Material.ANCIENT_DEBRIS) {
+                                loc.getBlock().setType(Material.AIR);
+                                loc.getBlock().getWorld().dropItem(loc, new ItemStack(Material.ANCIENT_DEBRIS));
+                            }
                         }
                     }
                 }
@@ -645,12 +661,24 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                 for (int y = -radius; y <= radius; y++) {
                     for (int z = -radius; z <= radius; z++) {
                         Location loc = location.clone().add(x, y, z);
+                        String region = regions.get(loc.getBlock().getLocation().toString());
                         if (loc.getBlock().getType() == Material.OBSIDIAN) {
                             loc.getBlock().setType(Material.AIR);
                             loc.getBlock().getWorld().dropItem(loc, new ItemStack(Material.OBSIDIAN));
                         } else if (loc.getBlock().getType() == Material.CRYING_OBSIDIAN) {
                             loc.getBlock().setType(Material.AIR);
                             loc.getBlock().getWorld().dropItem(loc, new ItemStack(Material.CRYING_OBSIDIAN));
+                        }
+                        for (String s : regions.values()) {
+                            if (s.equals(regions.get(loc.getBlock().getLocation().toString()))) {
+                                region = s;
+                            }
+                        }
+                        if (region == null) {
+                            if (loc.getBlock().getType() == Material.ANCIENT_DEBRIS) {
+                                loc.getBlock().setType(Material.AIR);
+                                loc.getBlock().getWorld().dropItem(loc, new ItemStack(Material.ANCIENT_DEBRIS));
+                            }
                         }
                     }
                 }
@@ -835,7 +863,7 @@ public final class HolyTNT extends JavaPlugin implements Listener {
 
 
         for (Map.Entry<Location, Material> entry : blocks.entrySet()) {
-            if (entry.getKey().getBlock().getType() == Material.WATER || entry.getKey().getBlock().getType() == Material.AIR || entry.getKey().getBlock().getType() == Material.PACKED_ICE) {
+            if (entry.getKey().getBlock().getType() == Material.WATER || entry.getKey().getBlock().getType() == Material.AIR || entry.getKey().getBlock().getType() == Material.PACKED_ICE || entry.getKey().getBlock().getType() == Material.LAVA) {
                 location.getBlock().getWorld().playSound(location, Sound.BLOCK_STONE_PLACE, 1f, 1f);
                 entry.getKey().getBlock().setType(Material.PACKED_ICE);
                 iceBlocks.put(entry.getKey().getBlock().getLocation(), entry.getKey().getBlock().getType());
@@ -858,44 +886,6 @@ public final class HolyTNT extends JavaPlugin implements Listener {
                 iceBlocks.clear();
             }
         }.runTaskLater(this, 100);
-    }
-
-    private void spawnC4TNT(Location location) {
-        TNTPrimed tntPrimed = location.getBlock().getWorld().spawn(location.add(0.5, 0, 0.5), TNTPrimed.class);
-        tntPrimed.setFuseTicks(140);
-        tntPrimed.setCustomName("C4");
-    }
-
-    private void spawnB2TNT(Location location) {
-        TNTPrimed tntPrimed = location.getBlock().getWorld().spawn(location.add(0.5, 0, 0.5), TNTPrimed.class);
-        tntPrimed.setFuseTicks(200);
-        tntPrimed.setCustomName("B2");
-    }
-
-    private void spawnRVTNT(Location location) {
-        TNTPrimed tntPrimed = location.getBlock().getWorld().spawn(location.add(0.5, 0, 0.5), TNTPrimed.class);
-        tntPrimed.setFuseTicks(140);
-        tntPrimed.setCustomName("RV");
-    }
-
-    private void spawnLVTNT(Location location) {
-        TNTPrimed tntPrimed = location.getBlock().getWorld().spawn(location.add(0.5, 0, 0.5), TNTPrimed.class);
-        tntPrimed.setFuseTicks(120);
-        tntPrimed.setCustomName("LV");
-    }
-
-    private void spawnATNT(Location location) {
-        TNTPrimed tntPrimed = location.getBlock().getWorld().spawn(location.add(0.5, 0, 0.5), TNTPrimed.class);
-        tntPrimed.setFuseTicks(200);
-        tntPrimed.setYield(12);
-        tntPrimed.setCustomName("A");
-    }
-
-    private void spawnBTNT(Location location) {
-        TNTPrimed tntPrimed = location.getBlock().getWorld().spawn(location.add(0.5, 0, 0.5), TNTPrimed.class);
-        tntPrimed.setFuseTicks(200);
-        tntPrimed.setYield(40);
-        tntPrimed.setCustomName("B");
     }
 
     private boolean regionsIntersect(ProtectedRegion region1, ProtectedRegion region2) {
